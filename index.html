@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>30Shine — Quản trị Giá Dịch vụ V1</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Calibri, sans-serif; background: linear-gradient(135deg, #1F4E78 0%, #2E75B6 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; color: #2c3e50; }
+.gate { background: white; border-radius: 16px; padding: 48px 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-width: 440px; width: 90%; text-align: center; }
+.logo { font-size: 28px; font-weight: 800; color: #1F4E78; margin-bottom: 8px; letter-spacing: -0.5px; }
+.tagline { color: #666; font-size: 14px; margin-bottom: 8px; }
+.subtitle { color: #999; font-size: 12px; margin-bottom: 32px; }
+.box { background: #f7f9fc; border: 1px solid #e1e8ed; border-radius: 10px; padding: 20px; margin-bottom: 20px; text-align: left; }
+.box-title { font-size: 13px; font-weight: 600; color: #1F4E78; margin-bottom: 8px; }
+.box-text { font-size: 12px; color: #666; line-height: 1.6; }
+input[type=password] { width: 100%; padding: 14px 16px; border: 2px solid #e1e8ed; border-radius: 8px; font-size: 15px; outline: none; transition: border-color 0.2s; font-family: inherit; }
+input[type=password]:focus { border-color: #2E75B6; }
+button { width: 100%; padding: 14px; background: #1F4E78; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 12px; transition: background 0.2s; font-family: inherit; }
+button:hover { background: #2E75B6; }
+.error { color: #C00000; font-size: 13px; margin-top: 12px; min-height: 18px; }
+.footer { color: #999; font-size: 11px; margin-top: 24px; }
+</style>
+</head>
+<body>
+<div class="gate">
+  <div class="logo">30Shine</div>
+  <div class="tagline">Quản trị Danh mục &amp; Giá Dịch vụ</div>
+  <div class="subtitle">V1 — Triển khai 05/05/2026</div>
+
+  <div class="box">
+    <div class="box-title">Tài liệu nội bộ — Khối Thương mại</div>
+    <div class="box-text">Bộ tài liệu này đang trong giai đoạn rà soát + chuẩn hoá. Vui lòng nhập mật khẩu để truy cập.</div>
+  </div>
+
+  <form id="gateForm" onsubmit="return checkPass(event)">
+    <input type="password" id="pw" placeholder="Nhập mật khẩu" autocomplete="off" autofocus>
+    <button type="submit">Mở tài liệu</button>
+    <div class="error" id="err"></div>
+  </form>
+
+  <div class="footer">© 30Shine — Khối Thương mại</div>
+</div>
+
+<script>
+const HASH = "d27b75ea214013dcdd022342fdf7c83f404d2e8b852de756d3d0b1f2b59f9458";
+const PORTAL = "TraCuu_Gia_HeThong.html";
+
+async function sha256(msg) {
+  const buf = new TextEncoder().encode(msg);
+  const hashBuf = await crypto.subtle.digest("SHA-256", buf);
+  return Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+async function checkPass(e) {
+  e.preventDefault();
+  const pw = document.getElementById("pw").value;
+  const err = document.getElementById("err");
+  err.textContent = "";
+  const h = await sha256(pw);
+  if (h === HASH) {
+    sessionStorage.setItem("tm_unlocked", "1");
+    window.location.href = PORTAL;
+  } else {
+    err.textContent = "Mật khẩu không đúng. Vui lòng thử lại.";
+    document.getElementById("pw").value = "";
+  }
+  return false;
+}
+
+if (sessionStorage.getItem("tm_unlocked") === "1") {
+  window.location.href = PORTAL;
+}
+</script>
+</body>
+</html>
