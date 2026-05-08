@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<script>
+if (sessionStorage.getItem("tm_unlocked") !== "1") { window.location.href = "index.html"; }
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verify Giá DV — Dashboard rà soát</title>
+<style>
+:root { --navy: #1F4E78; --navy-light: #2E75B6; --green: #548235; --orange: #ED7D31; --red: #C00000; --gray: #666; --bg: #f7f9fc; --border: #e1e8ed; --warn: #fff3cd; --danger: #f8d7da; --ok: #d4edda; --ct: #e8eaf6; --nq: #fff3cd; --dl: #ffe0b2; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, "Segoe UI", Calibri, sans-serif; background: var(--bg); color: #2c3e50; padding: 18px; line-height: 1.5; }
+.header { background: linear-gradient(135deg, var(--navy), var(--navy-light)); color: white; padding: 20px 26px; border-radius: 12px; margin-bottom: 14px; }
+.header h1 { font-size: 22px; margin-bottom: 4px; }
+.back { display: inline-block; margin-bottom: 8px; color: white; text-decoration: none; padding: 5px 12px; background: rgba(255,255,255,0.2); border-radius: 6px; font-size: 13px; }
+.kpi { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 14px; }
+.kpi-card { background: white; padding: 14px 18px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); border-left: 4px solid var(--navy); cursor: pointer; transition: transform 0.15s; }
+.kpi-card:hover { transform: translateY(-2px); }
+.kpi-card.active { background: var(--navy); color: white; }
+.kpi-card .label { font-size: 12px; color: var(--gray); margin-bottom: 4px; }
+.kpi-card.active .label { color: rgba(255,255,255,0.85); }
+.kpi-card .value { font-size: 28px; font-weight: 700; color: var(--navy); }
+.kpi-card.active .value { color: white; }
+.kpi-card .sub { font-size: 11px; color: var(--gray); margin-top: 2px; }
+.kpi-card.active .sub { color: rgba(255,255,255,0.85); }
+.kpi-card.danger { border-left-color: var(--red); }
+.kpi-card.danger .value { color: var(--red); }
+.kpi-card.warn { border-left-color: var(--orange); }
+.kpi-card.warn .value { color: var(--orange); }
+.kpi-card.ok { border-left-color: var(--green); }
+.kpi-card.ok .value { color: var(--green); }
+
+.controls { background: white; padding: 12px; border-radius: 10px; margin-bottom: 12px; display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
+.control { display: flex; flex-direction: column; }
+.control label { font-size: 11px; font-weight: 600; color: var(--navy); margin-bottom: 4px; }
+.control input, .control select { padding: 7px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; font-family: inherit; }
+
+.legend { background: white; padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; font-size: 12px; display: flex; gap: 18px; flex-wrap: wrap; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+.dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; vertical-align: middle; margin-right: 4px; }
+.dot.ok { background: var(--green); }
+.dot.warn { background: var(--orange); }
+.dot.danger { background: var(--red); }
+.dot.zero { background: #999; }
+
+.cum-block { background: white; border-radius: 10px; margin-bottom: 10px; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,0.05); }
+.cum-header { padding: 10px 16px; background: var(--navy); color: white; font-size: 13px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+.cum-header.warn { background: var(--orange); }
+.cum-header.danger { background: var(--red); }
+.cum-header .badges { display: flex; gap: 8px; align-items: center; }
+.cum-header .badge { background: rgba(255,255,255,0.22); padding: 2px 8px; border-radius: 8px; font-size: 11px; }
+.cum-header .toggle { font-size: 14px; opacity: 0.8; }
+
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { background: var(--bg); padding: 8px 10px; text-align: left; font-weight: 600; color: var(--navy); font-size: 12px; border-bottom: 1px solid var(--border); }
+th.num { text-align: right; }
+td { padding: 7px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+td.num { text-align: right; font-family: 'SF Mono', monospace; font-weight: 600; }
+.row.ct td { background: var(--ct); }
+.row.nq td { background: var(--nq); }
+.row.dl td { background: var(--dl); }
+.row.median td { background: #fffbe7; font-weight: bold; border-top: 2px solid #f5b800; border-bottom: 2px solid #f5b800; }
+
+.tag { display: inline-block; padding: 2px 8px; border-radius: 8px; font-size: 11px; font-weight: 600; }
+.tag.ct { background: #5c6bc0; color: white; }
+.tag.nq { background: var(--orange); color: white; }
+.tag.dl { background: #ff9800; color: white; }
+.delta-warn { color: var(--orange); font-weight: 700; font-size: 11px; margin-left: 4px; }
+.delta-danger { color: var(--red); font-weight: 700; font-size: 11px; margin-left: 4px; }
+.delta-ok { color: var(--green); font-size: 11px; margin-left: 4px; }
+.zero { color: #999; font-style: italic; }
+
+.empty { background: white; padding: 40px; border-radius: 10px; text-align: center; color: var(--gray); }
+.help { background: #e7f3fe; border-left: 3px solid var(--navy); padding: 12px 16px; border-radius: 6px; margin-bottom: 12px; font-size: 13px; }
+
+@media (max-width: 768px) {
+  .kpi { grid-template-columns: 1fr 1fr; }
+  .controls { grid-template-columns: 1fr; }
+  table { font-size: 11px; }
+  th, td { padding: 5px 6px; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a href="ChinhSach_DichVu_GiaDV_30Shine.html" class="back">← Quay lại Portal</a>
+  <h1>🔍 Verify Giá DV — Dashboard rà soát</h1>
+  <p style="font-size: 13px; opacity: 0.95;">Soi nhanh chỗ giá lệch chuẩn cụm — quyết định nhanh chỗ cần điều chỉnh trước 05/05/2026</p>
+</div>
+
+<div class="kpi" id="kpi"></div>
+
+<div class="help">
+  <strong>Cách dùng:</strong> Click 1 KPI ở trên để xem nhanh cụm cần check. Cụm bôi <span style="color:#ED7D31;font-weight:bold">cam</span> = các salon trong cụm chênh giá nhau >5K. <span style="color:#C00000;font-weight:bold">Đỏ</span> = chênh >10K. Số bên phải mỗi giá là chênh lệch so giá trung bình cụm — nhỏ là tốt.
+</div>
+
+<div class="controls">
+  <div class="control"><label>🔍 Tìm salon</label><input id="q" placeholder="Tên salon, mã..."></div>
+  <div class="control"><label>Loại salon</label>
+    <select id="ftype"><option value="">Tất cả</option><option value="CT">Công ty</option><option value="NQ">Nhượng quyền</option><option value="DL">Salon độc lập</option></select>
+  </div>
+  <div class="control"><label>Bộ lọc nhanh</label>
+    <select id="fview"><option value="all">Tất cả cụm</option><option value="risk">Chỉ cụm rủi ro (chênh giá &gt;5K)</option><option value="ctnq">Cụm CT-NQ chênh &gt;10K</option><option value="zero">Salon thiếu data</option></select>
+  </div>
+</div>
+
+<div class="legend">
+  <span><span class="dot ok"></span>OK (lệch &lt;3K)</span>
+  <span><span class="dot warn"></span>Cảnh báo (lệch 3-10K)</span>
+  <span><span class="dot danger"></span>Rủi ro (lệch ≥10K)</span>
+  <span><span class="dot zero"></span>Chưa có data (giá = 0)</span>
+  <span style="margin-left: auto; color: var(--gray);">CT = Công ty | NQ = Nhượng quyền | ĐL = Salon độc lập</span>
+</div>
+
+<div id="content"></div>
+
+<script>
+// Data nhúng cứng — sync từ GiaHienTai_HeThong.html
+const DATA_SCRIPT = document.createElement("script");
+DATA_SCRIPT.src = "GiaHienTai_HeThong.html";
+// Inline DATA below to avoid cross-file dependency
+</script>
+
+<script>
+const DATA = [{"code": "109 TQH", "ten": "109 Trần Quốc Hoàn", "tinh": "Hà Nội", "cum": 1, "cg": 100500, "uon": 398500, "nhuom": 368500, "type": "CT"}, {"code": "346 KT", "ten": "346 Khâm Thiên", "tinh": "Hà Nội", "cum": 3, "cg": 103500, "uon": 418500, "nhuom": 371500, "type": "CT"}, {"code": "104 CB", "ten": "104 Cửa Bắc", "tinh": "TP Hà Nội", "cum": 3, "cg": 103500, "uon": 333500, "nhuom": 322500, "type": "NQ"}, {"code": "55 TH", "ten": "55 Thái Hà", "tinh": "TP Hà Nội", "cum": 3, "cg": 103500, "uon": 318500, "nhuom": 301500, "type": "NQ"}, {"code": "63B TDT", "ten": "63B Tôn Đức Thắng", "tinh": "TP Hà Nội", "cum": 3, "cg": 103500, "uon": 333500, "nhuom": 322500, "type": "NQ"}, {"code": "62 LH", "ten": "62 Láng Hạ", "tinh": "Hà Nội", "cum": 4, "cg": 100500, "uon": 398500, "nhuom": 334500, "type": "CT"}, {"code": "90 TDH", "ten": "90 Trần Duy Hưng", "tinh": "TP Hà Nội", "cum": 4, "cg": 101500, "uon": 283500, "nhuom": 281500, "type": "NQ"}, {"code": "382 NT", "ten": "382 Nguyễn Trãi", "tinh": "Hà Nội", "cum": 5, "cg": 114500, "uon": 398500, "nhuom": 371500, "type": "CT"}, {"code": "82 VTP", "ten": "82 Vũ Trọng Phụng", "tinh": "Hà Nội", "cum": 5, "cg": 115500, "uon": 280500, "nhuom": 305500, "type": "NQ"}, {"code": "Royal City", "ten": "30Shine Royal City", "tinh": "Hà Nội", "cum": 5, "cg": 110500, "uon": 265500, "nhuom": 286500, "type": "NQ"}, {"code": "148 TD", "ten": "148B Trương Định", "tinh": "Hà Nội", "cum": 6, "cg": 102500, "uon": 398500, "nhuom": 368500, "type": "CT"}, {"code": "173 TN", "ten": "173 Thanh Nhàn", "tinh": "Hà Nội", "cum": 6, "cg": 104500, "uon": 398500, "nhuom": 368500, "type": "CT"}, {"code": "14 LN", "ten": "14 Lĩnh Nam", "tinh": "TP Hà Nội", "cum": 6, "cg": 110500, "uon": 333500, "nhuom": 267500, "type": "NQ"}, {"code": "10 TP", "ten": "10 Trần Phú", "tinh": "Hà Nội", "cum": 7, "cg": 97500, "uon": 398500, "nhuom": 368500, "type": "CT"}, {"code": "55A NVL", "ten": "55A Nguyễn Văn Lộc", "tinh": "Hà Nội", "cum": 7, "cg": 101500, "uon": 398500, "nhuom": 371500, "type": "CT"}, {"code": "VINSMART PZ4", "ten": "30Shine Vinsmart City Parking Zone 4", "tinh": "TP Hà Nội", "cum": 7, "cg": 101500, "uon": 298500, "nhuom": 281500, "type": "NQ"}, {"code": "186 QT", "ten": "186 Quang Trung ", "tinh": "Hà Nội", "cum": 8, "cg": 107500, "uon": 398500, "nhuom": 334500, "type": "CT"}, {"code": "357 LACASTA", "ten": "357 Lacasta", "tinh": "TP Hà Nội", "cum": 8, "cg": 120500, "uon": 270500, "nhuom": 273500, "type": "NQ"}, {"code": "304 NT TH", "ten": "304 Nguyễn Trãi ", "tinh": "Thanh Hóa", "cum": 9, "cg": 112500, "uon": 398500, "nhuom": 334500, "type": "CT"}, {"code": "595 BT TH", "ten": "595 Bà Triệu", "tinh": "Thanh Hóa", "cum": 9, "cg": 114500, "uon": 398500, "nhuom": 334500, "type": "CT"}, {"code": "80 TP TH", "ten": "80 Trần Phú", "tinh": "Thanh Hóa", "cum": 9, "cg": 112500, "uon": 398500, "nhuom": 334500, "type": "CT"}, {"code": "58 NVC NA", "ten": "58 Nguyễn Văn Cừ", "tinh": "Nghệ An", "cum": 10, "cg": 96500, "uon": 398500, "nhuom": 348500, "type": "CT"}, {"code": "68 LN NA", "ten": "68 Lê Nin", "tinh": "Nghệ An", "cum": 10, "cg": 96500, "uon": 398500, "nhuom": 334500, "type": "CT"}, {"code": "80 PL BD", "ten": "80 Phú Lợi", "tinh": "Bình Dương", "cum": 11, "cg": 98500, "uon": 398500, "nhuom": 334500, "type": "CT"}, {"code": "13 BH2", "ten": "13 Bình Hòa 2", "tinh": "Tỉnh Bình Dương", "cum": 11, "cg": 99500, "uon": 322500, "nhuom": 317500, "type": "NQ"}, {"code": "641 CMT8 BD", "ten": "641 Cách Mạng Tháng 8", "tinh": "Bình Dương", "cum": 11, "cg": 99500, "uon": 322500, "nhuom": 317500, "type": "NQ"}, {"code": "65 22T12 BD", "ten": "65 Đường 22 Tháng 12", "tinh": "Bình Dương", "cum": 11, "cg": 98500, "uon": 316500, "nhuom": 302500, "type": "NQ"}, {"code": "1371 PVT", "ten": "1371 Phạm Văn Thuận", "tinh": "Đồng Nai", "cum": 12, "cg": 104500, "uon": 398500, "nhuom": 348500, "type": "CT"}, {"code": "451 PVT", "ten": "451 Phạm Văn Thuận", "tinh": "Đồng Nai", "cum": 12, "cg": 96500, "uon": 398500, "nhuom": 334500, "type": "CT"}, {"code": "135 LD", "ten": "135 Lê Duẩn", "tinh": "Tỉnh Đồng Nai", "cum": 12, "cg": 108500, "uon": 267500, "nhuom": 258500, "type": "NQ"}, {"code": "483 TN", "ten": "483 Thống Nhất", "tinh": "Không xác định", "cum": 14, "cg": 104500, "uon": 398500, "nhuom": 334500, "type": "CT"}, {"code": "12 LDT", "ten": "12 Lê Đức Thọ", "tinh": "Hồ Chí Minh", "cum": 15, "cg": 108500, "uon": 398500, "nhuom": 368500, "type": "CT"}, {"code": "152 NO", "ten": "152 Nguyễn Oanh", "tinh": "TP Hồ Chí Minh", "cum": 15, "cg": 108500, "uon": 305500, "nhuom": 249500, "type": "NQ"}, {"code": "170 NTL", "ten": "170 Nơ Trang Long", "tinh": "TP Hồ Chí Minh", "cum": 15, "cg": 117500, "uon": 345500, "nhuom": 283500, "type": "NQ"}, {"code": "359 LQD", "ten": "359 Lê Quang Định", "tinh": "TP Hồ Chí Minh", "cum": 15, "cg": 117500, "uon": 345500, "nhuom": 283500, "type": "NQ"}, {"code": "312 LVS", "ten": "312 Lê Văn Sỹ", "tinh": "Không xác định", "cum": 16, "cg": 101500, "uon": 398500, "nhuom": 368500, "type": "CT"}, {"code": "112 PQ", "ten": "112 Phổ Quang", "tinh": "Hồ Chí Minh", "cum": 16, "cg": 108500, "uon": 331500, "nhuom": 280500, "type": "NQ"}, {"code": "341 XVNT", "ten": "341 Xô Viết Nghệ Tĩnh", "tinh": "Hồ Chí Minh", "cum": 17, "cg": 99500, "uon": 398500, "nhuom": 334500, "type": "CT"}, {"code": "27A NVL", "ten": "27A Nguyễn Văn Lạc", "tinh": "TP Hồ Chí Minh", "cum": 17, "cg": 102500, "uon": 278500, "nhuom": 310500, "type": "NQ"}, {"code": "145 THT", "ten": "145 Tô Hiến Thành", "tinh": "Hồ Chí Minh", "cum": 18, "cg": 102500, "uon": 398500, "nhuom": 334500, "type": "CT"}, {"code": "575 AC", "ten": "575 Âu Cơ", "tinh": "Hồ Chí Minh", "cum": 18, "cg": 106500, "uon": 398500, "nhuom": 368500, "type": "CT"}, {"code": "99 TSN", "ten": "99 Tân Sơn Nhì", "tinh": "Hồ Chí Minh", "cum": 18, "cg": 106500, "uon": 398500, "nhuom": 368500, "type": "CT"}, {"code": "236 DBT", "ten": "236 Dương Bá Trạc", "tinh": "Hồ Chí Minh", "cum": 20, "cg": 106500, "uon": 398500, "nhuom": 368500, "type": "CT"}, {"code": "671 QL50", "ten": "671 Quốc lộ 50", "tinh": "TP Hồ Chí Minh", "cum": 20, "cg": 116500, "uon": 282500, "nhuom": 283500, "type": "NQ"}, {"code": "68 NT", "ten": "68 Nguyễn Trãi", "tinh": "Hồ Chí Minh", "cum": 20, "cg": 112500, "uon": 267500, "nhuom": 269500, "type": "NQ"}, {"code": "77 PVC", "ten": "77B Phạm Viết Chánh ", "tinh": "TP Hồ Chí Minh", "cum": 20, "cg": 108500, "uon": 252500, "nhuom": 254500, "type": "NQ"}, {"code": "237 NTT", "ten": "237 Nguyễn Thị Thập", "tinh": "Hồ Chí Minh", "cum": 21, "cg": 96500, "uon": 398500, "nhuom": 368500, "type": "CT"}, {"code": "420 HTP", "ten": "420 Huỳnh Tấn Phát", "tinh": "Hồ Chí Minh", "cum": 21, "cg": 99500, "uon": 398500, "nhuom": 368500, "type": "CT"}, {"code": "190 HB", "ten": "190 Hòa Bình", "tinh": "Hồ Chí Minh", "cum": 22, "cg": 102500, "uon": 398500, "nhuom": 348500, "type": "CT"}, {"code": "730 TL10", "ten": "730 Tỉnh lộ 10", "tinh": "Hồ Chí Minh", "cum": 22, "cg": 102500, "uon": 398500, "nhuom": 368500, "type": "CT"}, {"code": "8 CVL", "ten": "8 Châu Văn Liêm", "tinh": "Hồ Chí Minh", "cum": 22, "cg": 102500, "uon": 398500, "nhuom": 368500, "type": "CT"}, {"code": "927 HG", "ten": "927  Hậu Giang", "tinh": "Hồ Chí Minh", "cum": 22, "cg": 102500, "uon": 398500, "nhuom": 368500, "type": "CT"}, {"code": "1146 KVC", "ten": "1146 Kha Vạn Cân", "tinh": "Hồ Chí Minh", "cum": 23, "cg": 96500, "uon": 398500, "nhuom": 348500, "type": "CT"}, {"code": "29 HB", "ten": "29 Hiệp Bình", "tinh": "Hồ Chí Minh", "cum": 23, "cg": 96500, "uon": 398500, "nhuom": 348500, "type": "CT"}, {"code": "401/1 NDT", "ten": "401/1 Nguyễn Duy Trinh", "tinh": "Hồ Chí Minh", "cum": 23, "cg": 96500, "uon": 398500, "nhuom": 348500, "type": "CT"}, {"code": "177 DVB", "ten": "177 Đặng Văn Bi", "tinh": "Thành phố Hồ Chí Minh", "cum": 23, "cg": 98500, "uon": 281500, "nhuom": 283500, "type": "NQ"}, {"code": "356 DXH", "ten": "356 Đỗ Xuân Hợp", "tinh": "TP Hồ Chí Minh", "cum": 23, "cg": 98500, "uon": 281500, "nhuom": 283500, "type": "NQ"}, {"code": "411 NVT", "ten": "411 Nguyễn Văn Tăng", "tinh": "TP Hồ Chí Minh", "cum": 23, "cg": 95500, "uon": 267500, "nhuom": 268500, "type": "NQ"}, {"code": "99 LVV", "ten": "99 Lê Văn Việt", "tinh": "TP Hồ Chí Minh", "cum": 23, "cg": 92500, "uon": 252500, "nhuom": 254500, "type": "NQ"}, {"code": "103 TN", "ten": "103 Trần Não", "tinh": "Hồ Chí Minh", "cum": 24, "cg": 101500, "uon": 408500, "nhuom": 371500, "type": "CT"}, {"code": "186 DTH", "ten": "186 Đinh Tiên Hoàng", "tinh": "Hồ Chí Minh", "cum": 24, "cg": 97500, "uon": 398500, "nhuom": 368500, "type": "CT"}, {"code": "25 TD", "ten": "25 Tôn Đản", "tinh": "Hồ Chí Minh", "cum": 24, "cg": 98500, "uon": 418500, "nhuom": 371500, "type": "CT"}, {"code": "1180 QT", "ten": "1180 Quang Trung", "tinh": "Hồ Chí Minh", "cum": 25, "cg": 109500, "uon": 398500, "nhuom": 348500, "type": "CT"}, {"code": "32 NAT", "ten": "32 Nguyễn Ảnh Thủ", "tinh": "Hồ Chí Minh", "cum": 25, "cg": 110500, "uon": 398500, "nhuom": 334500, "type": "CT"}, {"code": "708 LTT", "ten": "708 Lê Trọng Tấn", "tinh": "Hồ Chí Minh", "cum": 25, "cg": 112500, "uon": 398500, "nhuom": 348500, "type": "CT"}, {"code": "76 PVH", "ten": "76 Phan Văn Hớn", "tinh": "Hồ Chí Minh", "cum": 25, "cg": 102500, "uon": 398500, "nhuom": 348500, "type": "CT"}, {"code": "A6 NAT", "ten": "A6 Nguyễn Ảnh Thủ", "tinh": "TP Hồ Chí Minh", "cum": 25, "cg": 118500, "uon": 291500, "nhuom": 284500, "type": "NQ"}, {"code": "255 NAN", "ten": "255 Nguyễn An Ninh", "tinh": "Bình Dương", "cum": 27, "cg": 105500, "uon": 398500, "nhuom": 348500, "type": "CT"}, {"code": "36 N1 BD", "ten": "36 đường N1, KCN Mỹ Phước 1", "tinh": "Bình Dương", "cum": 27, "cg": 107500, "uon": 398500, "nhuom": 334500, "type": "CT"}, {"code": "168 NVC", "ten": "168 Nguyễn Văn Cừ", "tinh": "Hà Nội", "cum": 29, "cg": 114500, "uon": 418500, "nhuom": 348500, "type": "CT"}, {"code": "202 DC", "ten": "202 Đội Cấn", "tinh": "Hà Nội", "cum": 29, "cg": 112500, "uon": 398500, "nhuom": 371500, "type": "CT"}, {"code": "264 LLQ", "ten": "264 Lạc Long Quân", "tinh": "Hà Nội", "cum": 29, "cg": 105500, "uon": 398500, "nhuom": 334500, "type": "CT"}, {"code": "11 PKT", "ten": "11 Phan Kế Toại", "tinh": "Hà Nội", "cum": 30, "cg": 106500, "uon": 398500, "nhuom": 334500, "type": "CT"}, {"code": "65 CD", "ten": "65 Cầu Diễn", "tinh": "Hà Nội", "cum": 30, "cg": 102500, "uon": 418500, "nhuom": 368500, "type": "CT"}, {"code": "90 NH", "ten": "90 Nguyễn Hoàng", "tinh": "Hà Nội", "cum": 30, "cg": 102500, "uon": 398500, "nhuom": 348500, "type": "CT"}, {"code": "362 NGT BN", "ten": "362 Ngô Gia Tự", "tinh": "Bắc Ninh", "cum": 32, "cg": 100500, "uon": 398500, "nhuom": 368500, "type": "CT"}, {"code": "01 TQT BL LD", "ten": "01 Trần Quốc Toản, TP Bảo Lộc", "tinh": "Lâm Đồng", "cum": null, "cg": 78500, "uon": 432500, "nhuom": 475500, "type": "DL"}, {"code": "113 LTK TG", "ten": "113/7C Lý Thường kiệt", "tinh": "Tỉnh Tiền Giang", "cum": null, "cg": 100500, "uon": 1177500, "nhuom": 902500, "type": "DL"}, {"code": "113 THD AG", "ten": "113 Trần Hưng Đạo", "tinh": "An Giang", "cum": null, "cg": 96500, "uon": 398500, "nhuom": 348500, "type": "CT"}, {"code": "116 TK", "ten": "116 Trung Kính", "tinh": "Hà Nội", "cum": null, "cg": 96500, "uon": 398500, "nhuom": 334500, "type": "CT"}, {"code": "130 XVNT DN", "ten": "130 Xô Viết Nghệ Tĩnh", "tinh": "TP Đà Nẵng", "cum": null, "cg": 141500, "uon": 0, "nhuom": 616500, "type": "DL"}, {"code": "14AD4 BD", "ten": "14A D4 Lái Thiêu", "tinh": "Thành phố Hồ Chí Minh", "cum": null, "cg": 74500, "uon": 0, "nhuom": 350500, "type": "DL"}, {"code": "161 NVC", "ten": "161 Nguyễn Văn Cừ", "tinh": "Cần Thơ", "cum": null, "cg": 57500, "uon": 206500, "nhuom": 167500, "type": "DL"}, {"code": "205 30T4 CT", "ten": "205 Đường 30/4", "tinh": "", "cum": null, "cg": 72500, "uon": 296500, "nhuom": 391500, "type": "DL"}, {"code": "205 LT HP", "ten": "205 Lạch Tray", "tinh": "TP Hải Phòng", "cum": null, "cg": 96500, "uon": 462500, "nhuom": 1342500, "type": "DL"}, {"code": "27 NT DN", "ten": "27 Nguyễn Trãi", "tinh": "Đồng Nai", "cum": null, "cg": 93500, "uon": 394500, "nhuom": 420500, "type": "DL"}, {"code": "290 QT TH", "ten": "290 Quang Trung", "tinh": "Thanh Hóa", "cum": null, "cg": 99500, "uon": 398500, "nhuom": 371500, "type": "CT"}, {"code": "344 CMT8 VT", "ten": "344 Cách Mạng Tháng 8", "tinh": "TP Bà Rịa - Vũng Tàu", "cum": null, "cg": 88500, "uon": 0, "nhuom": 320500, "type": "DL"}, {"code": "345 NVL DN", "ten": "345 Nguyễn Văn Linh", "tinh": "TP. Đà Nẵng", "cum": null, "cg": 106500, "uon": 777500, "nhuom": 533500, "type": "DL"}, {"code": "35 HB NT", "ten": "35 Hồng Bàng", "tinh": "Tỉnh Khánh Hòa", "cum": null, "cg": 92500, "uon": 327500, "nhuom": 371500, "type": "DL"}, {"code": "363 LNQ TN", "ten": " 363 Lương Ngọc Quyến", "tinh": "Thái Nguyên", "cum": null, "cg": 112500, "uon": 418500, "nhuom": 368500, "type": "CT"}, {"code": "39 HBT", "ten": "39 Hai Bà Trưng", "tinh": "Hà Nội", "cum": null, "cg": 106500, "uon": 398500, "nhuom": 334500, "type": "CT"}, {"code": "4 LQD BN", "ten": "04 Lê Quang Đạo", "tinh": "Bắc Ninh", "cum": null, "cg": 96500, "uon": 398500, "nhuom": 334500, "type": "CT"}, {"code": "406 TNM VT", "ten": "406 Thống Nhất Mới", "tinh": "Bà Rịa - Vũng Tàu", "cum": null, "cg": 94500, "uon": 462500, "nhuom": 562500, "type": "DL"}, {"code": "484 NTH QN", "ten": "484 Nguyễn Thái Học", "tinh": "Tỉnh Bình Định", "cum": null, "cg": 66500, "uon": 288500, "nhuom": 288500, "type": "DL"}, {"code": "504 30T4", "ten": "504 đường 30 Tháng 4", "tinh": "Bà Rịa - Vũng Tàu", "cum": null, "cg": 103500, "uon": 0, "nhuom": 0, "type": "DL"}, {"code": "50BT4 NPC LD", "ten": "50BT4 NPC - Linh Đàm", "tinh": "Hà Nội", "cum": null, "cg": 96500, "uon": 398500, "nhuom": 334500, "type": "CT"}, {"code": "58 HV BP", "ten": "58 Hùng Vương", "tinh": "Bình Phước", "cum": null, "cg": 94500, "uon": 380500, "nhuom": 402500, "type": "DL"}, {"code": "7 DTP LA", "ten": "7 Đỗ Tường Phong", "tinh": "Long An", "cum": null, "cg": 108500, "uon": 398500, "nhuom": 368500, "type": "CT"}, {"code": "99 TĐT ĐT", "ten": "99 Tôn Đức Thắng", "tinh": "Đồng Tháp", "cum": null, "cg": 84500, "uon": 413500, "nhuom": 443500, "type": "DL"}, {"code": "F33 HV PT", "ten": "F33 Hùng Vương", "tinh": "Tỉnh Bình Thuận", "cum": null, "cg": 122500, "uon": 0, "nhuom": 694500, "type": "DL"}, {"code": "TG 25/4 QN", "ten": "Time Garden 25/4", "tinh": "Quảng Ninh", "cum": null, "cg": 96500, "uon": 398500, "nhuom": 348500, "type": "CT"}];
+
+// Median helper
+function median(arr) {
+  if (!arr.length) return null;
+  const s = [...arr].sort((a, b) => a - b);
+  const m = Math.floor(s.length / 2);
+  return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+}
+
+// Group by cum (skip null)
+function groupByCum(data) {
+  const g = {};
+  data.forEach(s => {
+    const k = s.cum || "_no_cum";
+    g[k] = g[k] || [];
+    g[k].push(s);
+  });
+  return g;
+}
+
+// Cum stats — median + spread + risk level
+function cumStats(salons, key) {
+  const vals = salons.map(s => s[key]).filter(v => v > 0);
+  if (!vals.length) return { med: null, spread: 0, level: "ok" };
+  const med = median(vals);
+  const spread = Math.max(...vals) - Math.min(...vals);
+  let level = "ok";
+  if (spread >= 10000) level = "danger";
+  else if (spread > 5000) level = "warn";
+  return { med, spread, level };
+}
+
+function ctNqGap(salons, key) {
+  const cts = salons.filter(s => s.type === "CT").map(s => s[key]).filter(v => v > 0);
+  const nqs = salons.filter(s => s.type === "NQ").map(s => s[key]).filter(v => v > 0);
+  if (!cts.length || !nqs.length) return null;
+  return Math.abs(median(cts) - median(nqs));
+}
+
+function fmtPrice(v) {
+  if (!v || v === 0) return '<span class="zero">— chưa có</span>';
+  return (v / 1000).toFixed(1) + "K";
+}
+
+function deltaTag(price, med) {
+  if (!price || price === 0) return "";
+  if (med === null) return "";
+  const d = price - med;
+  const ad = Math.abs(d);
+  if (ad < 3000) return ` <span class="delta-ok">≈cụm</span>`;
+  const sign = d > 0 ? "+" : "";
+  const cls = ad >= 10000 ? "delta-danger" : "delta-warn";
+  return ` <span class="${cls}">${sign}${(d / 1000).toFixed(1)}K</span>`;
+}
+
+function dotFor(price, med) {
+  if (!price || price === 0) return '<span class="dot zero"></span>';
+  if (med === null) return '<span class="dot ok"></span>';
+  const ad = Math.abs(price - med);
+  if (ad < 3000) return '<span class="dot ok"></span>';
+  if (ad >= 10000) return '<span class="dot danger"></span>';
+  return '<span class="dot warn"></span>';
+}
+
+function computeKPI(data) {
+  const groups = groupByCum(data);
+  let cumRisk = 0, ctNqGapCnt = 0, zeroCnt = 0;
+  for (const k in groups) {
+    if (k === "_no_cum") continue;
+    const s = groups[k];
+    const cgSpread = cumStats(s, "cg").spread;
+    if (cgSpread > 5000) cumRisk++;
+    const gap = ctNqGap(s, "cg");
+    if (gap !== null && gap > 10000) ctNqGapCnt++;
+  }
+  data.forEach(s => {
+    if (s.cg === 0 || s.uon === 0 || s.nhuom === 0) zeroCnt++;
+  });
+  return { cumRisk, ctNqGapCnt, zeroCnt, total: data.length };
+}
+
+let activeKPI = null;
+
+function renderKPI() {
+  const k = computeKPI(DATA);
+  const html = `
+    <div class="kpi-card ${activeKPI === 'all' ? 'active' : ''}" onclick="setKPI('all')">
+      <div class="label">Tổng salon</div><div class="value">${k.total}</div><div class="sub">59 CT + 26 NQ + 17 ĐL</div>
+    </div>
+    <div class="kpi-card warn ${activeKPI === 'risk' ? 'active' : ''}" onclick="setKPI('risk')">
+      <div class="label">Cụm có chênh giá &gt;5K (CG)</div><div class="value">${k.cumRisk}</div><div class="sub">cần align đuôi giá cụm</div>
+    </div>
+    <div class="kpi-card danger ${activeKPI === 'ctnq' ? 'active' : ''}" onclick="setKPI('ctnq')">
+      <div class="label">Cụm CT-NQ chênh &gt;10K</div><div class="value">${k.ctNqGapCnt}</div><div class="sub">cần thoả thuận lại</div>
+    </div>
+    <div class="kpi-card ${activeKPI === 'zero' ? 'active' : ''}" onclick="setKPI('zero')">
+      <div class="label">Salon thiếu data DV</div><div class="value">${k.zeroCnt}</div><div class="sub">CG/Uốn/Nhuộm = 0</div>
+    </div>`;
+  document.getElementById("kpi").innerHTML = html;
+}
+
+function setKPI(view) {
+  activeKPI = view;
+  document.getElementById("fview").value = view === "all" ? "all" : view;
+  renderKPI();
+  render();
+}
+
+function render() {
+  const q = document.getElementById("q").value.toLowerCase().trim();
+  const ftype = document.getElementById("ftype").value;
+  const fview = document.getElementById("fview").value;
+
+  let data = DATA;
+  if (ftype) data = data.filter(s => s.type === ftype);
+  if (q) data = data.filter(s => (s.code + " " + s.ten + " " + s.tinh).toLowerCase().includes(q));
+
+  const groups = groupByCum(data);
+  const cumKeys = Object.keys(groups).filter(k => k !== "_no_cum").map(Number).sort((a, b) => a - b);
+
+  let html = "";
+  let shown = 0;
+
+  // Cụm có data
+  for (const cum of cumKeys) {
+    const salons = groups[cum];
+    const cgSt = cumStats(salons, "cg");
+    const uonSt = cumStats(salons, "uon");
+    const nhuomSt = cumStats(salons, "nhuom");
+    const gap = ctNqGap(salons, "cg");
+
+    // Apply view filter
+    if (fview === "risk" && cgSt.spread <= 5000 && uonSt.spread <= 5000 && nhuomSt.spread <= 5000) continue;
+    if (fview === "ctnq" && (gap === null || gap <= 10000)) continue;
+    if (fview === "zero") {
+      const hasZero = salons.some(s => s.cg === 0 || s.uon === 0 || s.nhuom === 0);
+      if (!hasZero) continue;
+    }
+
+    shown++;
+    let lvl = "ok";
+    if (cgSt.level === "danger") lvl = "danger";
+    else if (cgSt.level === "warn") lvl = "warn";
+
+    const headerCls = lvl === "ok" ? "" : lvl;
+
+    let tableRows = "";
+    // (Median row hidden — value shown in cluster header instead)
+    salons.forEach(s => {
+      tableRows += `<tr class="row ${s.type.toLowerCase()}">
+        <td><span class="tag ${s.type.toLowerCase()}">${s.type === "DL" ? "ĐL" : s.type}</span></td>
+        <td><strong>${s.code}</strong></td>
+        <td>${s.ten}<br><span style="font-size:11px;color:#666">${s.tinh}</span></td>
+        <td class="num">${dotFor(s.cg, cgSt.med)} ${fmtPrice(s.cg)}${deltaTag(s.cg, cgSt.med)}</td>
+        <td class="num">${dotFor(s.uon, uonSt.med)} ${fmtPrice(s.uon)}${deltaTag(s.uon, uonSt.med)}</td>
+        <td class="num">${dotFor(s.nhuom, nhuomSt.med)} ${fmtPrice(s.nhuom)}${deltaTag(s.nhuom, nhuomSt.med)}</td>
+      </tr>`;
+    });
+
+    const types = [...new Set(salons.map(s => s.type))].join("+");
+    let badges = `<span class="badge">${salons.length} salon</span><span class="badge">${types}</span>`;
+    if (cgSt.spread > 5000) badges += `<span class="badge">Chênh giá CG ${(cgSt.spread / 1000).toFixed(0)}K</span>`;
+    if (gap !== null && gap > 10000) badges += `<span class="badge">CT-NQ gap ${(gap / 1000).toFixed(0)}K</span>`;
+
+    html += `
+      <div class="cum-block">
+        <div class="cum-header ${headerCls}" onclick="toggleCum(${cum})">
+          <div><strong>Cụm ${cum}</strong> <span style="opacity:.85;margin-left:8px">${salons[0].tinh}</span></div>
+          <div class="badges">${badges}<span class="toggle" id="tg-${cum}">▼</span></div>
+        </div>
+        <div id="tb-${cum}" style="display:block">
+          <table>
+            <thead><tr><th>Loại</th><th>Mã</th><th>Salon</th><th class="num">Cắt Gội (891)</th><th class="num">Uốn (~1066)</th><th class="num">Nhuộm (1141)</th></tr></thead>
+            <tbody>${tableRows}</tbody>
+          </table>
+        </div>
+      </div>`;
+  }
+
+  // Salon không cụm (DL + CT chưa cluster)
+  if (groups._no_cum && (fview === "all" || fview === "zero")) {
+    const noCum = groups._no_cum;
+    let noCumFiltered = noCum;
+    if (fview === "zero") noCumFiltered = noCum.filter(s => s.cg === 0 || s.uon === 0 || s.nhuom === 0);
+    if (noCumFiltered.length) {
+      shown++;
+      let rows = noCumFiltered.map(s => `<tr class="row ${s.type.toLowerCase()}">
+        <td><span class="tag ${s.type.toLowerCase()}">${s.type === "DL" ? "ĐL" : s.type}</span></td>
+        <td><strong>${s.code}</strong></td>
+        <td>${s.ten}<br><span style="font-size:11px;color:#666">${s.tinh}</span></td>
+        <td class="num">${fmtPrice(s.cg)}</td>
+        <td class="num">${fmtPrice(s.uon)}</td>
+        <td class="num">${fmtPrice(s.nhuom)}</td>
+      </tr>`).join("");
+      html += `
+        <div class="cum-block">
+          <div class="cum-header" style="background:#666">
+            <div><strong>Salon chưa cluster</strong> <span style="opacity:.85;margin-left:8px">DL chủ yếu — không tham chiếu cụm</span></div>
+            <div class="badges"><span class="badge">${noCumFiltered.length} salon</span></div>
+          </div>
+          <table><thead><tr><th>Loại</th><th>Mã</th><th>Salon</th><th class="num">Cắt Gội</th><th class="num">Uốn</th><th class="num">Nhuộm</th></tr></thead><tbody>${rows}</tbody></table>
+        </div>`;
+    }
+  }
+
+  if (!shown) {
+    html = `<div class="empty">Không có cụm/salon nào khớp bộ lọc hiện tại.</div>`;
+  }
+  document.getElementById("content").innerHTML = html;
+}
+
+function toggleCum(cum) {
+  const tb = document.getElementById("tb-" + cum);
+  const tg = document.getElementById("tg-" + cum);
+  if (tb.style.display === "none") { tb.style.display = "block"; tg.textContent = "▼"; }
+  else { tb.style.display = "none"; tg.textContent = "▶"; }
+}
+
+document.getElementById("q").addEventListener("input", render);
+document.getElementById("ftype").addEventListener("change", render);
+document.getElementById("fview").addEventListener("change", () => { activeKPI = document.getElementById("fview").value; renderKPI(); render(); });
+
+renderKPI();
+render();
+</script>
+
+</body>
+</html>
