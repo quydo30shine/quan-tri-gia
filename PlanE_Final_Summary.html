@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<script>
+if (sessionStorage.getItem("tm_unlocked") !== "1") { window.location.href = "index.html"; }
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plan E-Final — Tóm tắt trình BGĐ/GĐKV (2026)</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --navy: #1F3864;
+    --navy-light: #2E4E8C;
+    --phat-trien: #4CAF50;
+    --dinh-hinh: #FF9800;
+    --ben-vung: #2196F3;
+    --nen-mong: #F44336;
+    --khong-data: #9E9E9E;
+    --bg: #f5f7fa;
+    --card: #ffffff;
+    --text: #1a1a1a;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --green-bg: #e8f5e9;
+    --orange-bg: #fff3e0;
+    --blue-bg: #e3f2fd;
+    --red-bg: #ffebee;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Arial, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+  }
+  header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+    color: white;
+    padding: 24px 32px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  header h1 { font-size: 22px; margin-bottom: 4px; }
+  header .subtitle { font-size: 13px; opacity: 0.85; margin-bottom: 12px; }
+  nav { display: flex; gap: 4px; flex-wrap: wrap; }
+  nav a {
+    color: white;
+    text-decoration: none;
+    padding: 6px 12px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+    font-size: 13px;
+    transition: background 0.2s;
+  }
+  nav a:hover { background: rgba(255,255,255,0.25); }
+  main { max-width: 1400px; margin: 0 auto; padding: 24px; }
+  section { margin-bottom: 40px; }
+  h2 {
+    color: var(--navy);
+    border-bottom: 3px solid var(--navy);
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+    font-size: 22px;
+  }
+  h3 { color: var(--navy); margin: 16px 0 8px; font-size: 17px; }
+  h4 { margin: 12px 0 6px; font-size: 14px; color: var(--muted); }
+
+  .card {
+    background: var(--card);
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    margin-bottom: 12px;
+  }
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin: 12px 0;
+  }
+  .stat {
+    background: var(--card);
+    padding: 12px 16px;
+    border-radius: 6px;
+    border-left: 4px solid var(--navy);
+  }
+  .stat .label { font-size: 12px; color: var(--muted); }
+  .stat .value { font-size: 20px; font-weight: bold; color: var(--navy); }
+  .stat .sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    font-size: 13px;
+    margin: 8px 0;
+  }
+  th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--border); }
+  th { background: var(--navy); color: white; font-weight: 600; font-size: 12px; }
+  tr:nth-child(even) td { background: #fafafa; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  td.center, th.center { text-align: center; }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    color: white;
+  }
+  .badge-pt { background: var(--phat-trien); }
+  .badge-dh { background: var(--dinh-hinh); }
+  .badge-bv { background: var(--ben-vung); }
+  .badge-nm { background: var(--nen-mong); }
+  .badge-kd { background: var(--khong-data); }
+  .highlight-good { color: #2e7d32; font-weight: 600; }
+  .highlight-bad { color: #c62828; font-weight: 600; }
+  .highlight-warn { color: #e65100; font-weight: 600; }
+
+  .group-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 12px;
+  }
+  .group-card {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+  .group-card .head {
+    padding: 12px 14px;
+    color: white;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .group-card .body { padding: 12px 14px; font-size: 13px; }
+  .group-card .body strong { color: var(--navy); }
+  .group-card ul { margin: 4px 0 8px 18px; }
+  .group-card li { margin-bottom: 2px; font-size: 12.5px; }
+  .group-card .huong {
+    font-style: italic;
+    color: var(--muted);
+    border-left: 3px solid var(--border);
+    padding-left: 8px;
+    margin: 6px 0 10px;
+    font-size: 12.5px;
+  }
+
+  .chart-wrap {
+    background: white;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    margin-bottom: 12px;
+  }
+  .chart-wrap .chart-title { font-weight: bold; color: var(--navy); margin-bottom: 8px; }
+  canvas { max-height: 450px; }
+
+  .gdkv-matrix-table td.group-cell {
+    vertical-align: top;
+    font-size: 11.5px;
+    line-height: 1.4;
+  }
+  .gdkv-matrix-table .salon-chip {
+    display: inline-block;
+    background: var(--bg);
+    padding: 1px 6px;
+    border-radius: 3px;
+    margin: 1px 2px;
+    font-size: 11px;
+  }
+
+  .lever-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+  }
+  .lever-card {
+    background: white;
+    padding: 14px;
+    border-radius: 8px;
+    border-top: 4px solid var(--navy);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .lever-card h3 { border: none; padding: 0; margin-bottom: 8px; font-size: 15px; }
+  .lever-card ul { margin-left: 16px; font-size: 12.5px; }
+  .lever-card li { margin-bottom: 3px; }
+
+  .flag-group {
+    background: white;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    border-left: 4px solid var(--dinh-hinh);
+  }
+  .flag-group h4 { color: var(--navy); font-size: 13px; margin-bottom: 6px; }
+
+  select {
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 13px;
+  }
+
+  details { margin-bottom: 6px; }
+  summary { cursor: pointer; font-weight: 600; padding: 4px 0; }
+  details[open] summary { color: var(--navy); }
+
+  .watermark {
+    text-align: center;
+    padding: 24px 0;
+    color: var(--muted);
+    font-size: 11px;
+    border-top: 1px solid var(--border);
+    margin-top: 32px;
+  }
+
+  @media (max-width: 768px) {
+    header { padding: 16px; }
+    main { padding: 12px; }
+    h2 { font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Plan E-Final — Chiến lược KD Salon T5-T12.2026</h1>
+  <div class="subtitle">Trình BGĐ &amp; GĐKV · GĐ Khối Vận hành · Ngày 23/04/2026</div>
+  <nav>
+    <a href="#s1">1. Phân nhóm</a>
+    <a href="#s2">2. Playbook 4 nhóm</a>
+    <a href="#s3">3. Review T1-T4</a>
+    <a href="#s4">4. Mục tiêu cũ T5-T12</a>
+    <a href="#s5">5. Plan E-Final</a>
+    <a href="#s6">6. Đòn bẩy</a>
+    <a href="#s7">7. Khả thi &amp; Rủi ro</a>
+  </nav>
+</header>
+<main>
+
+<section id="s1">
+  <h2>1. Phân nhóm salon công ty</h2>
+  <p style="color:var(--muted); margin-bottom:12px;">
+    59 salon công ty được phân vào 4 nhóm dựa trên 2 trục: <strong>CMGR (đà tăng trưởng khách)</strong> và <strong>EBITDA margin (biên lợi nhuận)</strong>.
+    Bubble size = DTT TB Q1.2026.
+  </p>
+
+  <div class="chart-wrap">
+    <div class="chart-title">Ma trận 4 nhóm — CMGR vs EBITDA margin</div>
+    <canvas id="chartMatrix"></canvas>
+  </div>
+
+  <h3>Phân nhóm theo GDKV</h3>
+  <div style="overflow-x:auto;">
+  <table class="gdkv-matrix-table">
+    <thead>
+      <tr>
+        <th>GDKV</th>
+        <th class="center"><span class="badge" style="background:#4CAF50">Phát triển</span></th>
+        <th class="center"><span class="badge" style="background:#FF9800">Định hình</span></th>
+        <th class="center"><span class="badge" style="background:#2196F3">Bền vững</span></th>
+        <th class="center"><span class="badge" style="background:#F44336">Nền móng</span></th>
+        <th class="center">Tổng</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Phan Thị Hồng Gấm</strong></td>
+        <td class="group-cell"><span class="salon-chip">50BT4 NPC LD</span></td>
+        <td class="group-cell"><span class="salon-chip">148 TD</span><span class="salon-chip">173 TN</span><span class="salon-chip">363 LNQ TN</span></td>
+        <td class="group-cell"><span class="salon-chip">202 DC</span><span class="salon-chip">264 LLQ</span><span class="salon-chip">346 KT</span><span class="salon-chip">39 HBT</span></td>
+        <td class="group-cell"><span style="color:#bbb">—</span></td>
+        <td class="center"><strong>8</strong></td>
+      </tr>
+      <tr><td><strong>Đoàn Trung Đức</strong></td>
+        <td class="group-cell"><span class="salon-chip">116 TK</span><span class="salon-chip">55A NVL</span></td>
+        <td class="group-cell"><span class="salon-chip">151 CG</span><span class="salon-chip">62 LH</span><span class="salon-chip">65 CD</span></td>
+        <td class="group-cell"><span class="salon-chip">109 TQH</span><span class="salon-chip">382 NT</span></td>
+        <td class="group-cell"><span class="salon-chip">90 NH</span></td>
+        <td class="center"><strong>8</strong></td>
+      </tr>
+      <tr><td><strong>Nguyễn Như Quỳnh</strong></td>
+        <td class="group-cell"><span style="color:#bbb">—</span></td>
+        <td class="group-cell"><span class="salon-chip">TG 25/4 QN</span></td>
+        <td class="group-cell"><span class="salon-chip">168 NVC</span></td>
+        <td class="group-cell"><span class="salon-chip">4 LQD BN</span></td>
+        <td class="center"><strong>3</strong></td>
+      </tr>
+      <tr><td><strong>Nguyễn Thị Huệ</strong></td>
+        <td class="group-cell"><span class="salon-chip">290 QT TH</span><span class="salon-chip">595 BT TH</span><span class="salon-chip">80 TP TH</span></td>
+        <td class="group-cell"><span style="color:#bbb">—</span></td>
+        <td class="group-cell"><span class="salon-chip">304 NT TH</span><span class="salon-chip">58 NVC NA</span><span class="salon-chip">68 LN NA</span></td>
+        <td class="group-cell"><span style="color:#bbb">—</span></td>
+        <td class="center"><strong>6</strong></td>
+      </tr>
+      <tr><td><strong>Trịnh Văn Quang</strong></td>
+        <td class="group-cell"><span class="salon-chip">1180 QT</span></td>
+        <td class="group-cell"><span style="color:#bbb">—</span></td>
+        <td class="group-cell"><span class="salon-chip">12 LDT</span><span class="salon-chip">483 TN</span><span class="salon-chip">76 PVH</span></td>
+        <td class="group-cell"><span class="salon-chip">32 NAT</span></td>
+        <td class="center"><strong>5</strong></td>
+      </tr>
+      <tr><td><strong>Nguyễn Thanh Sang</strong></td>
+        <td class="group-cell"><span class="salon-chip">145 THT</span><span class="salon-chip">190 HB</span><span class="salon-chip">312 LVS</span><span class="salon-chip">575 AC</span><span class="salon-chip">730 TL10</span><span class="salon-chip">927 HG</span><span class="salon-chip">99 TSN</span></td>
+        <td class="group-cell"><span class="salon-chip">8 CVL</span></td>
+        <td class="group-cell"><span style="color:#bbb">—</span></td>
+        <td class="group-cell"><span class="salon-chip">708 LTT</span></td>
+        <td class="center"><strong>9</strong></td>
+      </tr>
+      <tr><td><strong>Tống Xuân Quyền</strong></td>
+        <td class="group-cell"><span class="salon-chip">186 DTH</span><span class="salon-chip">237 NTT</span><span class="salon-chip">25 TD</span></td>
+        <td class="group-cell"><span class="salon-chip">341 XVNT</span></td>
+        <td class="group-cell"><span class="salon-chip">420 HTP</span><span class="salon-chip">7 DTP LA</span></td>
+        <td class="group-cell"><span class="salon-chip">113 THD AG</span><span class="salon-chip">236 DBT</span></td>
+        <td class="center"><strong>8</strong></td>
+      </tr>
+      <tr><td><strong>Nguyễn Việt Cường</strong></td>
+        <td class="group-cell"><span class="salon-chip">103 TN</span><span class="salon-chip">36 N1 BD</span></td>
+        <td class="group-cell"><span class="salon-chip">401/1 NDT</span></td>
+        <td class="group-cell"><span class="salon-chip">1146 KVC</span><span class="salon-chip">80 PL BD</span></td>
+        <td class="group-cell"><span class="salon-chip">1371 PVT</span><span class="salon-chip">255 NAN</span><span class="salon-chip">29 HB</span><span class="salon-chip">451 PVT</span></td>
+        <td class="center"><strong>9</strong></td>
+      </tr>
+      <tr><td><strong>Hoàng Nguyên Hội</strong></td>
+        <td class="group-cell"><span class="salon-chip">11 PKT</span></td>
+        <td class="group-cell"><span style="color:#bbb">—</span></td>
+        <td class="group-cell"><span class="salon-chip">10 TP</span></td>
+        <td class="group-cell"><span class="salon-chip">186 QT</span></td>
+        <td class="center"><strong>3</strong></td>
+      </tr>
+      <tr style="background:#eef2f7;"><td><strong>Tổng</strong></td>
+        <td class="center"><strong>20</strong></td>
+        <td class="center"><strong>10</strong></td>
+        <td class="center"><strong>18</strong></td>
+        <td class="center"><strong>11</strong></td>
+        <td class="center"><strong>59</strong></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section id="s2">
+  <h2>2. Tóm tắt playbook 4 nhóm</h2>
+  <p style="color:var(--muted); margin-bottom:12px;">
+    Mỗi nhóm có bài toán kinh doanh riêng → mục tiêu, cách phân bổ nguồn lực khác nhau.
+    Nguồn lực chảy: <strong>Bền vững → Phát triển/Định hình/Nền móng</strong>.
+  </p>
+  <div class="group-cards">
+
+    <div class="group-card">
+      <div class="head" style="background:#4CAF50;">
+        <span>Phát triển</span>
+        <span>20 salon</span>
+      </div>
+      <div class="body">
+        <div class="huong">Cân bằng — tự nuôi, giữ nhịp</div>
+        <div><strong>Mục tiêu:</strong> 50/50 Khách & EBITDA (bảo vệ biên ≥ 6%)</div>
+        <h4 style="color:#2e7d32;">Nên làm</h4>
+        <ul><li>Giữ nền khách cũ (Salon chịu trách nhiệm chính)</li><li>Nâng giá trị đơn hàng (Thương mại)</li><li>Giữ đội hình thợ lõi (HR/Vận hành)</li></ul>
+        <h4 style="color:#c62828;">Không nên làm</h4>
+        <ul><li>Điều thợ giỏi đi salon khác</li><li>Đổ ngân sách tiếp thị hút khách mới</li><li>Tăng giá đột ngột</li></ul>
+      </div>
+    </div>
+
+    <div class="group-card">
+      <div class="head" style="background:#FF9800;">
+        <span>Định hình</span>
+        <span>10 salon</span>
+      </div>
+      <div class="body">
+        <div class="huong">Đầu tư chuyển hóa — nhận thợ giỏi</div>
+        <div><strong>Mục tiêu:</strong> 40% Khách / 60% EBITDA (cải thiện ≥ 5pt)</div>
+        <h4 style="color:#2e7d32;">Nên làm</h4>
+        <ul><li>Rà soát chi phí 3 dòng lớn (nhân sự, thuê, vật tư)</li><li>Nâng giá trị đơn hàng thay vì thêm khách</li><li>Điều thợ giỏi đến (SM phải đọc được P&L)</li></ul>
+        <h4 style="color:#c62828;">Không nên làm</h4>
+        <ul><li>Đổ tiếp thị hút thêm khách khi CP chưa kiểm soát</li><li>Tuyển thêm người khi chưa rà định biên</li><li>Giảm giá để giữ khách (đang lỗ)</li></ul>
+      </div>
+    </div>
+
+    <div class="group-card">
+      <div class="head" style="background:#2196F3;">
+        <span>Bền vững</span>
+        <span>18 salon</span>
+      </div>
+      <div class="body">
+        <div class="huong">Khai thác — chia nguồn lực ra hệ thống</div>
+        <div><strong>Mục tiêu:</strong> 30% Khách / 70% EBITDA (≥ 6.7%)</div>
+        <h4 style="color:#2e7d32;">Nên làm</h4>
+        <ul><li>Giữ khách cũ / Kéo khách quay lại (R8W)</li><li>Cải thiện biên — có thể bớt thợ tốt sang nhóm khác</li><li>Nâng giá trị đơn hàng qua khách quen</li></ul>
+        <h4 style="color:#c62828;">Không nên làm</h4>
+        <ul><li>Đổ tiếp thị hút khách mới cho salon đang mất khách cũ</li><li>Cắt chi phí nhân sự quá mức</li><li>Bỏ qua R8W giảm vì doanh thu vẫn ổn</li></ul>
+      </div>
+    </div>
+
+    <div class="group-card">
+      <div class="head" style="background:#F44336;">
+        <span>Nền móng</span>
+        <span>11 salon</span>
+      </div>
+      <div class="body">
+        <div class="huong">Đầu tư nền tảng — cấp trên sát cánh</div>
+        <div><strong>Mục tiêu:</strong> Cột mốc cải thiện (tối đa 30M thưởng)</div>
+        <h4 style="color:#2e7d32;">Nên làm</h4>
+        <ul><li>Ổn định nền tảng vận hành (SM phù hợp, kỷ luật)</li><li>Rà soát CP mặt bằng + định biên (không đầu tư thêm)</li><li>Xây nền khách SAU KHI ổn định vận hành</li></ul>
+        <h4 style="color:#c62828;">Không nên làm</h4>
+        <ul><li>Áp cùng cơ chế thưởng với Phát triển/Bền vững</li><li>Đổ tiếp thị trước khi ổn định vận hành</li><li>Khuyến khích SM bỏ tiền cam kết hiệu quả</li></ul>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section id="s3">
+  <h2>3. Review mục tiêu T1-T4.2026 vs Phân nhóm</h2>
+  <p style="color:var(--muted);">Khi lập target đầu năm, 54% salon có mục tiêu mâu thuẫn với Playbook — trong đó Định hình 100%.</p>
+
+  <div class="stat-grid">
+    <div class="stat"><div class="label">Salon có flag mâu thuẫn</div><div class="value">32/59</div><div class="sub">54% tổng số</div></div>
+    <div class="stat" style="border-left-color:var(--dinh-hinh);"><div class="label">Định hình mâu thuẫn</div><div class="value">10/10</div><div class="sub">100% — nghiêm trọng nhất</div></div>
+    <div class="stat" style="border-left-color:var(--phat-trien);"><div class="label">Phát triển đúng hướng</div><div class="value">17/20</div><div class="sub">85% — nhóm sát playbook nhất</div></div>
+    <div class="stat" style="border-left-color:var(--ben-vung);"><div class="label">Bền vững mâu thuẫn</div><div class="value">12/18</div><div class="sub">67% — bị ép LK quá mức</div></div>
+  </div>
+
+  <h3>Phân bổ target Growth LK vs Playbook — theo nhóm</h3>
+  <table>
+    <thead>
+      <tr><th>Nhóm</th><th class="num">Số salon</th><th class="num">TB Growth LK vs 2025</th><th class="num">EBITDA margin target</th><th class="num">Delta EBITDA pt</th><th class="num">Hit rate LK T1-T4</th><th class="num">% mâu thuẫn</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="badge" style="background:#4CAF50">Phát triển</span></td>
+        <td class="num">20</td>
+        <td class="num">14,6%</td>
+        <td class="num">14,5%</td>
+        <td class="num">+2,9pt</td>
+        <td class="num">97,6%</td>
+        <td class="num">15%</td>
+      </tr>
+      <tr>
+        <td><span class="badge" style="background:#FF9800">Định hình</span></td>
+        <td class="num">10</td>
+        <td class="num">55,6%</td>
+        <td class="num">10,9%</td>
+        <td class="num">+15,4pt</td>
+        <td class="num">86,3%</td>
+        <td class="num">100%</td>
+      </tr>
+      <tr>
+        <td><span class="badge" style="background:#2196F3">Bền vững</span></td>
+        <td class="num">18</td>
+        <td class="num">5,8%</td>
+        <td class="num">14,5%</td>
+        <td class="num">+2,0pt</td>
+        <td class="num">86,1%</td>
+        <td class="num">67%</td>
+      </tr>
+      <tr>
+        <td><span class="badge" style="background:#F44336">Nền móng</span></td>
+        <td class="num">11</td>
+        <td class="num">10,3%</td>
+        <td class="num">9,3%</td>
+        <td class="num">+2,6pt</td>
+        <td class="num">77,8%</td>
+        <td class="num">64%</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Top 3 loại mâu thuẫn (chiếm ~90% tổng flag)</h3>
+  <div class="flag-group">
+    <h4>Loại A — Bền vững / Nền móng bị ép LK quá mức (14 flag, 39%)</h4>
+    <table>
+      <thead><tr><th>Salon</th><th>Nhóm</th><th>GDKV</th><th class="num">Growth LK</th><th class="num">EBITDA target</th><th>Chi tiết flag</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>10 TP</strong></td>
+          <td><span class="badge" style="background:#2196F3">Bền vững</span></td>
+          <td style="font-size:11px;">Hoàng Nguyên Hội</td>
+          <td class="num">13,8%</td>
+          <td class="num">15,9%</td>
+          <td style="font-size:11px;">A — Bền vững bị ép LK +13.8% > 10% (playbook: tăng nhẹ, bảo vệ KH cũ)</td>
+        </tr>
+        <tr>
+          <td><strong>109 TQH</strong></td>
+          <td><span class="badge" style="background:#2196F3">Bền vững</span></td>
+          <td style="font-size:11px;">Đoàn Trung Đức</td>
+          <td class="num">20,3%</td>
+          <td class="num">15,5%</td>
+          <td style="font-size:11px;">A — Bền vững bị ép LK +20.3% > 10% (playbook: tăng nhẹ, bảo vệ KH cũ)</td>
+        </tr>
+        <tr>
+          <td><strong>1146 KVC</strong></td>
+          <td><span class="badge" style="background:#2196F3">Bền vững</span></td>
+          <td style="font-size:11px;">Nguyễn Việt Cường</td>
+          <td class="num">24,5%</td>
+          <td class="num">20,9%</td>
+          <td style="font-size:11px;">A — Bền vững bị ép LK +24.5% > 10% (playbook: tăng nhẹ, bảo vệ KH cũ)</td>
+        </tr>
+        <tr>
+          <td><strong>12 LDT</strong></td>
+          <td><span class="badge" style="background:#2196F3">Bền vững</span></td>
+          <td style="font-size:11px;">Trịnh Văn Quang</td>
+          <td class="num">15,3%</td>
+          <td class="num">15,1%</td>
+          <td style="font-size:11px;">A — Bền vững bị ép LK +15.3% > 10% (playbook: tăng nhẹ, bảo vệ KH cũ)</td>
+        </tr>
+        <tr>
+          <td><strong>1371 PVT</strong></td>
+          <td><span class="badge" style="background:#F44336">Nền móng</span></td>
+          <td style="font-size:11px;">Nguyễn Việt Cường</td>
+          <td class="num">16,8%</td>
+          <td class="num">18,2%</td>
+          <td style="font-size:11px;">A — Nền móng bị ép LK +16.8% > 5% (playbook: ổn định nền trước)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="flag-group">
+    <h4>Loại C — Định hình bị ép LK > 20% (9 flag, 25%)</h4>
+    <table>
+      <thead><tr><th>Salon</th><th>Nhóm</th><th>GDKV</th><th class="num">Growth LK</th><th class="num">EBITDA target</th><th>Chi tiết flag</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>173 TN</strong></td>
+          <td><span class="badge" style="background:#FF9800">Định hình</span></td>
+          <td style="font-size:11px;">Phan Thị Hồng Gấm</td>
+          <td class="num">65,6%</td>
+          <td class="num">8,7%</td>
+          <td style="font-size:11px;">C — Định hình bị ép LK +65.6% > 20% (playbook: giữ đà, ưu tiên biên); E — LK tăng +65.6% nhưng AOV giảm -5.8% (DT không tương xứng)</td>
+        </tr>
+        <tr>
+          <td><strong>TG 25/4 QN</strong></td>
+          <td><span class="badge" style="background:#FF9800">Định hình</span></td>
+          <td style="font-size:11px;">Nguyễn Như Quỳnh</td>
+          <td class="num">48,1%</td>
+          <td class="num">7,0%</td>
+          <td style="font-size:11px;">C — Định hình bị ép LK +48.1% > 20% (playbook: giữ đà, ưu tiên biên); E — LK tăng +48.1% nhưng AOV giảm -14.3% (DT không tương xứng)</td>
+        </tr>
+        <tr>
+          <td><strong>148 TD</strong></td>
+          <td><span class="badge" style="background:#FF9800">Định hình</span></td>
+          <td style="font-size:11px;">Phan Thị Hồng Gấm</td>
+          <td class="num">89,5%</td>
+          <td class="num">15,9%</td>
+          <td style="font-size:11px;">C — Định hình bị ép LK +89.5% > 20% (playbook: giữ đà, ưu tiên biên)</td>
+        </tr>
+        <tr>
+          <td><strong>151 CG</strong></td>
+          <td><span class="badge" style="background:#FF9800">Định hình</span></td>
+          <td style="font-size:11px;">Đoàn Trung Đức</td>
+          <td class="num">45,5%</td>
+          <td class="num">13,0%</td>
+          <td style="font-size:11px;">C — Định hình bị ép LK +45.5% > 20% (playbook: giữ đà, ưu tiên biên)</td>
+        </tr>
+        <tr>
+          <td><strong>341 XVNT</strong></td>
+          <td><span class="badge" style="background:#FF9800">Định hình</span></td>
+          <td style="font-size:11px;">Tống Xuân Quyền</td>
+          <td class="num">107,4%</td>
+          <td class="num">10,4%</td>
+          <td style="font-size:11px;">C — Định hình bị ép LK +107.4% > 20% (playbook: giữ đà, ưu tiên biên)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="flag-group">
+    <h4>Loại E — Mâu thuẫn nội bộ DT vs LK vs AOV (7 flag)</h4>
+    <table>
+      <thead><tr><th>Salon</th><th>Nhóm</th><th>GDKV</th><th class="num">Growth LK</th><th class="num">EBITDA target</th><th>Chi tiết flag</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>173 TN</strong></td>
+          <td><span class="badge" style="background:#FF9800">Định hình</span></td>
+          <td style="font-size:11px;">Phan Thị Hồng Gấm</td>
+          <td class="num">65,6%</td>
+          <td class="num">8,7%</td>
+          <td style="font-size:11px;">C — Định hình bị ép LK +65.6% > 20% (playbook: giữ đà, ưu tiên biên); E — LK tăng +65.6% nhưng AOV giảm -5.8% (DT không tương xứng)</td>
+        </tr>
+        <tr>
+          <td><strong>TG 25/4 QN</strong></td>
+          <td><span class="badge" style="background:#FF9800">Định hình</span></td>
+          <td style="font-size:11px;">Nguyễn Như Quỳnh</td>
+          <td class="num">48,1%</td>
+          <td class="num">7,0%</td>
+          <td style="font-size:11px;">C — Định hình bị ép LK +48.1% > 20% (playbook: giữ đà, ưu tiên biên); E — LK tăng +48.1% nhưng AOV giảm -14.3% (DT không tương xứng)</td>
+        </tr>
+        <tr>
+          <td><strong>168 NVC</strong></td>
+          <td><span class="badge" style="background:#2196F3">Bền vững</span></td>
+          <td style="font-size:11px;">Nguyễn Như Quỳnh</td>
+          <td class="num">-3,2%</td>
+          <td class="num">16,9%</td>
+          <td style="font-size:11px;">E — DT tăng +15.2% nhưng LK giảm -3.2%, AOV phải tăng +16.4% (khó đạt)</td>
+        </tr>
+        <tr>
+          <td><strong>186 DTH</strong></td>
+          <td><span class="badge" style="background:#4CAF50">Phát triển</span></td>
+          <td style="font-size:11px;">Tống Xuân Quyền</td>
+          <td class="num">41,3%</td>
+          <td class="num">15,6%</td>
+          <td style="font-size:11px;">E — LK tăng +41.3% nhưng AOV giảm -5.2% (DT không tương xứng)</td>
+        </tr>
+        <tr>
+          <td><strong>304 NT TH</strong></td>
+          <td><span class="badge" style="background:#2196F3">Bền vững</span></td>
+          <td style="font-size:11px;">Nguyễn Thị Huệ</td>
+          <td class="num">-0,4%</td>
+          <td class="num">22,5%</td>
+          <td style="font-size:11px;">E — DT tăng +22.1% nhưng LK giảm -0.4%, AOV phải tăng +22.6% (khó đạt)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="chart-wrap" style="margin-top:16px;">
+    <div class="chart-title">Hit rate LK T1-T4.2026 vs Target Growth — càng ép cao càng khó đạt</div>
+    <canvas id="chartHitRate"></canvas>
+  </div>
+</section>
+
+<section id="s4">
+  <h2>4. Đánh giá mục tiêu T5-T12 đầu năm (Target cũ)</h2>
+  <div class="stat-grid">
+    <div class="stat"><div class="label">Tổng LK target T5-T12</div><div class="value">~983K</div><div class="sub">lượt khách</div></div>
+    <div class="stat"><div class="label">Tổng DTT</div><div class="value">~232 tỷ</div><div class="sub">VNĐ</div></div>
+    <div class="stat"><div class="label">Tổng EBITDA target</div><div class="value">33,12 tỷ</div><div class="sub">Margin 14,5%</div></div>
+    <div class="stat" style="border-left-color:var(--nen-mong);"><div class="label">So sánh margin 2025 actual</div><div class="value">1,4%</div><div class="sub">target gấp ~10×</div></div>
+  </div>
+
+  <div class="card" style="background:var(--red-bg); border-left:4px solid var(--nen-mong);">
+    <strong>Vấn đề của Target cũ:</strong>
+    <ul style="margin: 6px 0 0 20px;">
+      <li>Margin 14,5% <strong>gấp ~10 lần</strong> actual 2025 (1,4%) — bước nhảy quá lớn.</li>
+      <li>Không tham chiếu Playbook PA9 → 54% salon bị flag mâu thuẫn.</li>
+      <li>Định hình 100% mâu thuẫn: yêu cầu LK +56% TB + EBITDA cải thiện +15,4pt đồng thời — bất khả thi.</li>
+      <li>Nền móng bị ép LK TB +10,3% khi playbook quy định "ổn định trước, tăng trưởng sau".</li>
+      <li>Bền vững bị ép LK > 10% cho 7/18 salon — đi ngược tinh thần "bảo vệ khách cũ".</li>
+    </ul>
+  </div>
+
+  <h3>Target cũ vs Actual 2025 theo nhóm</h3>
+  <table>
+    <thead>
+      <tr><th>Nhóm</th><th class="num">Số salon</th><th class="num">TB Growth LK yêu cầu</th><th class="num">EBITDA margin target</th><th class="num">EBITDA margin actual 2025</th><th class="num">Delta cần cải thiện</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="badge" style="background:#4CAF50">Phát triển</span></td>
+        <td class="num">20</td>
+        <td class="num">+14,6%</td>
+        <td class="num">14,5%</td>
+        <td class="num">6,0%</td>
+        <td class="num highlight-bad">+8,5pt</td>
+      </tr>
+      <tr>
+        <td><span class="badge" style="background:#FF9800">Định hình</span></td>
+        <td class="num">10</td>
+        <td class="num">+55,6%</td>
+        <td class="num">10,9%</td>
+        <td class="num">-3,2%</td>
+        <td class="num highlight-bad">+14,1pt</td>
+      </tr>
+      <tr>
+        <td><span class="badge" style="background:#2196F3">Bền vững</span></td>
+        <td class="num">18</td>
+        <td class="num">+5,8%</td>
+        <td class="num">14,5%</td>
+        <td class="num">6,7%</td>
+        <td class="num highlight-warn">+7,8pt</td>
+      </tr>
+      <tr>
+        <td><span class="badge" style="background:#F44336">Nền móng</span></td>
+        <td class="num">11</td>
+        <td class="num">+10,3%</td>
+        <td class="num">9,3%</td>
+        <td class="num">-7,5%</td>
+        <td class="num highlight-bad">+16,8pt</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="s5">
+  <h2>5. Đề xuất mục tiêu mới — Plan E-Final</h2>
+
+  <h3>5a. Tổng quan Plan E-Final</h3>
+  <div class="stat-grid">
+
+    <div class="stat" style="border-left-color:var(--phat-trien);"><div class="label">Tổng EBITDA</div><div class="value">31,45 tỷ</div><div class="sub highlight-good">95,0% target cũ · Đạt ngưỡng ≥95%</div></div>
+    <div class="stat"><div class="label">Tổng LK T5-T12</div><div class="value">952K</div><div class="sub">lượt khách</div></div>
+    <div class="stat"><div class="label">Tổng DTT</div><div class="value">222,8 tỷ</div><div class="sub">VNĐ</div></div>
+    <div class="stat"><div class="label">Margin TB</div><div class="value">14,12%</div><div class="sub">Giảm nhẹ do giảm đòn bẩy risk</div></div>
+    <div class="stat" style="border-left-color:var(--phat-trien);"><div class="label">Salon Khả thi</div><div class="value">55/58</div><div class="sub highlight-good">Cao nhất trong 5 plans</div></div>
+    <div class="stat" style="border-left-color:var(--dinh-hinh);"><div class="label">Salon Thách thức</div><div class="value">3</div><div class="sub">255 NAN · 451 PVT · 55A NVL</div></div>
+
+  </div>
+
+  <h4>So sánh 6 plans vs Target cũ</h4>
+  <div style="overflow-x:auto;">
+  <table>
+    <thead><tr>
+      <th>Metric</th>
+      <th>Target cũ</th>
+      <th>Plan A</th>
+      <th>Plan B</th>
+      <th>Plan C</th>
+      <th>Plan D</th>
+      <th>Plan E</th>
+      <th>Plan E-Final</th>
+      <th>Ghi chú E-Final</th>
+    </tr></thead>
+    <tbody>
+      <tr><td class="" style="">Tổng LK T5-T12</td><td class="num" style="">~980k</td><td class="num" style="">~1.02M</td><td class="num" style="">~995k</td><td class="num" style="">~970k</td><td class="num" style="">~965k</td><td class="num" style="">~952k</td><td class="num" style="background:var(--green-bg); font-weight:600;">~952k</td><td class="num" style="">Giữ nhất quán với E</td></tr>
+      <tr><td class="" style="">Tổng DTT (tỷ)</td><td class="num" style="">223.2</td><td class="num" style="">241.0</td><td class="num" style="">228.5</td><td class="num" style="">220.2</td><td class="num" style="">230.8</td><td class="num" style="">222.6</td><td class="num" style="background:var(--green-bg); font-weight:600;">222.8</td><td class="num" style="">+AOV 1% cho 5 salon PT</td></tr>
+      <tr><td class="" style="">Tổng EBITDA (tỷ)</td><td class="num" style="">33.12</td><td class="num" style="">36.7</td><td class="num" style="">34.9</td><td class="num" style="">32.5</td><td class="num" style="">38.69</td><td class="num" style="">33.10</td><td class="num" style="background:var(--green-bg); font-weight:600;">31.45</td><td class="num" style="">Baseline CHÍNH THỨC deploy</td></tr>
+      <tr><td class="" style="">% vs Target cũ</td><td class="num" style="">100%</td><td class="num" style="">110.8%</td><td class="num" style="">105.4%</td><td class="num" style="">98.1%</td><td class="num" style="">116.8%</td><td class="num" style="">99.9%</td><td class="num" style="background:var(--green-bg); font-weight:600;">95.0%</td><td class="num" style="">Đạt ≥95% — OK</td></tr>
+      <tr><td class="" style="">Margin TB</td><td class="num" style="">14.84%</td><td class="num" style="">15.2%</td><td class="num" style="">15.3%</td><td class="num" style="">14.8%</td><td class="num" style="">17.21%</td><td class="num" style="">14.87%</td><td class="num" style="background:var(--green-bg); font-weight:600;">14.12%</td><td class="num" style="">Giảm nhẹ do giảm đòn bẩy risk</td></tr>
+      <tr><td class="" style="">Salon Khả thi</td><td class="num" style="">-</td><td class="num" style="">-</td><td class="num" style="">45/58</td><td class="num" style="">53/58</td><td class="num" style="">56/58</td><td class="num" style="">55/58</td><td class="num" style="background:var(--green-bg); font-weight:600;">55/58</td><td class="num" style="">Giữ độ an toàn cao</td></tr>
+      <tr><td class="" style="">Salon Thách thức</td><td class="num" style="">-</td><td class="num" style="">-</td><td class="num" style="">13/58</td><td class="num" style="">5/58</td><td class="num" style="">2/58</td><td class="num" style="">3/58</td><td class="num" style="background:var(--green-bg); font-weight:600;">3/58</td><td class="num" style="">3 salon cần theo dõi</td></tr>
+      <tr><td class="" style="">Max margin jump (pt)</td><td class="num" style="">-</td><td class="num" style="">-</td><td class="num" style="">25+</td><td class="num" style="">~20</td><td class="num" style="">~20</td><td class="num" style="">23.0</td><td class="num" style="background:var(--green-bg); font-weight:600;">22.3</td><td class="num" style="">Tại 401/1 NDT (do chi phí fixed cao 2025)</td></tr>
+      <tr><td class="" style="">Đàm phán thuê</td><td class="num" style="">-</td><td class="num" style="">7 salon -5%</td><td class="num" style="">7 salon -5%</td><td class="num" style="">5 salon -5%</td><td class="num" style="">5 salon -5%</td><td class="num" style="">3 salon -3%</td><td class="num" style="background:var(--green-bg); font-weight:600;">3 salon -3%</td><td class="num" style="">255 NAN, 451 PVT, 708 LTT</td></tr>
+      <tr><td class="" style="">MKT Nhóm Yếu</td><td class="num" style="">-</td><td class="num" style="">-</td><td class="num" style="">-30%</td><td class="num" style="">-30%</td><td class="num" style="">-30%</td><td class="num" style="">-30%</td><td class="num" style="background:var(--green-bg); font-weight:600;">-15%</td><td class="num" style="">Giữ khách quay lại (R8W risk)</td></tr>
+      <tr><td class="" style="">TD ĐT total</td><td class="num" style="">-</td><td class="num" style="">700M</td><td class="num" style="">700M</td><td class="num" style="">600M</td><td class="num" style="">560M</td><td class="num" style="">560M</td><td class="num" style="background:var(--green-bg); font-weight:600;">760M</td><td class="num" style="">Buffer 200M: Định hình + Nền móng</td></tr>
+      <tr><td class="" style="">3VT scale theo LK</td><td class="num" style="">-</td><td class="num" style="">100%</td><td class="num" style="">100%</td><td class="num" style="">100%</td><td class="num" style="">100%</td><td class="num" style="">100%</td><td class="num" style="background:var(--green-bg); font-weight:600;">70%</td><td class="num" style="">Hybrid 30% fix + 70% biến phí</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3 style="margin-top:24px;">5b. Plan E-Final theo nhóm</h3>
+  <div class="group-cards">
+
+    <div class="group-card">
+      <div class="head" style="background:#4CAF50;">
+        <span>Phát triển</span>
+        <span>20 salon</span>
+      </div>
+      <div class="body">
+        <table style="margin:0;">
+          <tr><td>LK T5-T12</td><td class="num"><strong>401.705</strong></td></tr>
+          <tr><td>DTT</td><td class="num"><strong>94,8 tỷ</strong></td></tr>
+          <tr><td>EBITDA</td><td class="num"><strong>15,14 tỷ</strong></td></tr>
+          <tr><td>Margin TB</td><td class="num"><strong>15,97%</strong></td></tr>
+        </table>
+        <div style="margin-top:8px; font-size:12.5px; color:var(--muted);">
+          <strong>Chiến lược:</strong> Giữ nhịp, không push LK, AOV 0-2%. Bảo vệ biên.
+        </div>
+      </div>
+    </div>
+
+    <div class="group-card">
+      <div class="head" style="background:#FF9800;">
+        <span>Định hình</span>
+        <span>8 salon</span>
+      </div>
+      <div class="body">
+        <table style="margin:0;">
+          <tr><td>LK T5-T12</td><td class="num"><strong>105.921</strong></td></tr>
+          <tr><td>DTT</td><td class="num"><strong>22,6 tỷ</strong></td></tr>
+          <tr><td>EBITDA</td><td class="num"><strong>2,35 tỷ</strong></td></tr>
+          <tr><td>Margin TB</td><td class="num"><strong>10,42%</strong></td></tr>
+        </table>
+        <div style="margin-top:8px; font-size:12.5px; color:var(--muted);">
+          <strong>Chiến lược:</strong> Nhận thợ giỏi, cắt CP. Chuyển EBITDA âm → dương. LK ±0%.
+        </div>
+      </div>
+    </div>
+
+    <div class="group-card">
+      <div class="head" style="background:#2196F3;">
+        <span>Bền vững</span>
+        <span>18 salon</span>
+      </div>
+      <div class="body">
+        <table style="margin:0;">
+          <tr><td>LK T5-T12</td><td class="num"><strong>292.933</strong></td></tr>
+          <tr><td>DTT</td><td class="num"><strong>71,0 tỷ</strong></td></tr>
+          <tr><td>EBITDA</td><td class="num"><strong>10,73 tỷ</strong></td></tr>
+          <tr><td>Margin TB</td><td class="num"><strong>15,12%</strong></td></tr>
+        </table>
+        <div style="margin-top:8px; font-size:12.5px; color:var(--muted);">
+          <strong>Chiến lược:</strong> Giữ khách cũ. AOV +3-5%. Cắt MKT -15%. Điều thợ tốt ra ngoài.
+        </div>
+      </div>
+    </div>
+
+    <div class="group-card">
+      <div class="head" style="background:#F44336;">
+        <span>Nền móng</span>
+        <span>11 salon</span>
+      </div>
+      <div class="body">
+        <table style="margin:0;">
+          <tr><td>LK T5-T12</td><td class="num"><strong>135.391</strong></td></tr>
+          <tr><td>DTT</td><td class="num"><strong>30,6 tỷ</strong></td></tr>
+          <tr><td>EBITDA</td><td class="num"><strong>2,44 tỷ</strong></td></tr>
+          <tr><td>Margin TB</td><td class="num"><strong>7,97%</strong></td></tr>
+        </table>
+        <div style="margin-top:8px; font-size:12.5px; color:var(--muted);">
+          <strong>Chiến lược:</strong> Cột mốc cải thiện. Buffer TD ĐT +200M. LK -9%, tập trung nền.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <h3 style="margin-top:24px;">5c. Plan E-Final theo GDKV</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>GDKV</th>
+        <th class="num">Số salon</th>
+        <th class="num">LK T5-T12</th>
+        <th class="num">DTT (tỷ)</th>
+        <th class="num">EBITDA (tỷ)</th>
+        <th class="num">% Contribute EBITDA</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="background:#fff9e6;">
+        <td><strong>Nguyễn Thanh Sang</strong> <span class="highlight-good">★</span></td>
+        <td class="num">9</td>
+        <td class="num">215.778</td>
+        <td class="num">49,73</td>
+        <td class="num"><strong>8,21</strong></td>
+        <td class="num">26,1%</td>
+      </tr>
+      <tr style="background:#fff9e6;">
+        <td><strong>Nguyễn Việt Cường</strong> <span class="highlight-good">★</span></td>
+        <td class="num">9</td>
+        <td class="num">147.145</td>
+        <td class="num">33,11</td>
+        <td class="num"><strong>4,50</strong></td>
+        <td class="num">14,3%</td>
+      </tr>
+      <tr style="background:#fff9e6;">
+        <td><strong>Tống Xuân Quyền</strong> <span class="highlight-good">★</span></td>
+        <td class="num">8</td>
+        <td class="num">158.696</td>
+        <td class="num">34,52</td>
+        <td class="num"><strong>4,29</strong></td>
+        <td class="num">13,6%</td>
+      </tr>
+      <tr>
+        <td><strong>Đoàn Trung Đức</strong></td>
+        <td class="num">7</td>
+        <td class="num">115.832</td>
+        <td class="num">28,66</td>
+        <td class="num"><strong>3,79</strong></td>
+        <td class="num">12,0%</td>
+      </tr>
+      <tr>
+        <td><strong>Phan Thị Hồng Gấm</strong></td>
+        <td class="num">8</td>
+        <td class="num">114.189</td>
+        <td class="num">28,05</td>
+        <td class="num"><strong>3,56</strong></td>
+        <td class="num">11,3%</td>
+      </tr>
+      <tr>
+        <td><strong>Trịnh Văn Quang</strong></td>
+        <td class="num">5</td>
+        <td class="num">78.008</td>
+        <td class="num">18,67</td>
+        <td class="num"><strong>2,63</strong></td>
+        <td class="num">8,4%</td>
+      </tr>
+      <tr>
+        <td><strong>Nguyễn Như Quỳnh</strong></td>
+        <td class="num">3</td>
+        <td class="num">42.311</td>
+        <td class="num">10,57</td>
+        <td class="num"><strong>1,82</strong></td>
+        <td class="num">5,8%</td>
+      </tr>
+      <tr>
+        <td><strong>Nguyễn Thị Huệ</strong></td>
+        <td class="num">6</td>
+        <td class="num">46.471</td>
+        <td class="num">10,98</td>
+        <td class="num"><strong>1,45</strong></td>
+        <td class="num">4,6%</td>
+      </tr>
+      <tr>
+        <td><strong>Hoàng Nguyên Hội</strong></td>
+        <td class="num">3</td>
+        <td class="num">33.523</td>
+        <td class="num">8,53</td>
+        <td class="num"><strong>1,22</strong></td>
+        <td class="num">3,9%</td>
+      </tr>
+      <tr style="background:var(--bg); font-weight:bold;">
+        <td>TỔNG</td>
+        <td class="num">58</td>
+        <td class="num">951.953</td>
+        <td class="num">222,80</td>
+        <td class="num">31,45</td>
+        <td class="num">100%</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin-top:24px;">5d. Chi tiết Plan E-Final theo từng salon × tháng</h3>
+  <div class="card">
+    <div style="margin-bottom:10px;">
+      <label for="salonSel">Chọn salon:</label>
+      <select id="salonSel" onchange="showSalon(this.value)">
+        <option value="">-- Chọn salon --</option>
+        <option value="10 TP">10 TP — Bền vững</option>
+        <option value="103 TN">103 TN — Phát triển</option>
+        <option value="109 TQH">109 TQH — Bền vững</option>
+        <option value="11 PKT">11 PKT — Phát triển</option>
+        <option value="113 THD AG">113 THD AG — Nền móng</option>
+        <option value="1146 KVC">1146 KVC — Bền vững</option>
+        <option value="116 TK">116 TK — Phát triển</option>
+        <option value="1180 QT">1180 QT — Phát triển</option>
+        <option value="12 LDT">12 LDT — Bền vững</option>
+        <option value="1371 PVT">1371 PVT — Nền móng</option>
+        <option value="145 THT">145 THT — Phát triển</option>
+        <option value="148 TD">148 TD — Định hình</option>
+        <option value="168 NVC">168 NVC — Bền vững</option>
+        <option value="173 TN">173 TN — Định hình</option>
+        <option value="186 DTH">186 DTH — Phát triển</option>
+        <option value="186 QT">186 QT — Nền móng</option>
+        <option value="190 HB">190 HB — Phát triển</option>
+        <option value="202 DC">202 DC — Bền vững</option>
+        <option value="236 DBT">236 DBT — Nền móng</option>
+        <option value="237 NTT">237 NTT — Phát triển</option>
+        <option value="25 TD">25 TD — Phát triển</option>
+        <option value="255 NAN">255 NAN — Nền móng</option>
+        <option value="264 LLQ">264 LLQ — Bền vững</option>
+        <option value="29 HB">29 HB — Nền móng</option>
+        <option value="290 QT TH">290 QT TH — Phát triển</option>
+        <option value="304 NT TH">304 NT TH — Bền vững</option>
+        <option value="312 LVS">312 LVS — Phát triển</option>
+        <option value="32 NAT">32 NAT — Nền móng</option>
+        <option value="341 XVNT">341 XVNT — Định hình</option>
+        <option value="346 KT">346 KT — Bền vững</option>
+        <option value="36 N1 BD">36 N1 BD — Phát triển</option>
+        <option value="362 NGT BN">362 NGT BN — Không đủ data</option>
+        <option value="363 LNQ TN">363 LNQ TN — Định hình</option>
+        <option value="382 NT">382 NT — Bền vững</option>
+        <option value="39 HBT">39 HBT — Bền vững</option>
+        <option value="4 LQD BN">4 LQD BN — Nền móng</option>
+        <option value="401/1 NDT">401/1 NDT — Định hình</option>
+        <option value="420 HTP">420 HTP — Bền vững</option>
+        <option value="451 PVT">451 PVT — Nền móng</option>
+        <option value="483 TN">483 TN — Bền vững</option>
+        <option value="50BT4 NPC LD">50BT4 NPC LD — Phát triển</option>
+        <option value="55A NVL">55A NVL — Phát triển</option>
+        <option value="575 AC">575 AC — Phát triển</option>
+        <option value="58 NVC NA">58 NVC NA — Bền vững</option>
+        <option value="595 BT TH">595 BT TH — Phát triển</option>
+        <option value="62 LH">62 LH — Định hình</option>
+        <option value="65 CD">65 CD — Định hình</option>
+        <option value="68 LN NA">68 LN NA — Bền vững</option>
+        <option value="7 DTP LA">7 DTP LA — Bền vững</option>
+        <option value="708 LTT">708 LTT — Nền móng</option>
+        <option value="730 TL10">730 TL10 — Phát triển</option>
+        <option value="76 PVH">76 PVH — Bền vững</option>
+        <option value="8 CVL">8 CVL — Định hình</option>
+        <option value="80 PL BD">80 PL BD — Bền vững</option>
+        <option value="80 TP TH">80 TP TH — Phát triển</option>
+        <option value="90 NH">90 NH — Nền móng</option>
+        <option value="927 HG">927 HG — Phát triển</option>
+        <option value="99 TSN">99 TSN — Phát triển</option>
+      </select>
+    </div>
+    <div id="salonDetail" style="font-size:13px;">
+      <p style="color:var(--muted); padding:12px;">Chọn một salon để xem chi tiết target 8 tháng T5-T12.</p>
+    </div>
+  </div>
+</section>
+
+<section id="s6">
+  <h2>6. Đòn bẩy tối ưu trong Plan E-Final</h2>
+  <p style="color:var(--muted);">
+    Tổng tiết kiệm: <strong>3,59 tỷ</strong>. Điều chỉnh lớn vs Plan E gốc: 3VT chỉ scale 70% (thay 100%), MKT nhóm yếu -15% (thay -30%), buffer TD ĐT +200M.
+  </p>
+
+  <div class="lever-grid">
+    <div class="lever-card" style="border-top-color:var(--phat-trien);">
+      <h3>Khách (LK)</h3>
+      <ul>
+        <li><strong>Nhóm khỏe</strong> (Phát triển): LK +15% theo playbook max</li>
+        <li><strong>Nhóm đi ngang</strong> (Bền vững): LK ±3% (không cắt sâu)</li>
+        <li><strong>Định hình</strong>: giữ đà, không push thêm</li>
+        <li><strong>Nền móng</strong>: cột mốc cải thiện thay target LK cứng</li>
+      </ul>
+    </div>
+
+    <div class="lever-card" style="border-top-color:var(--ben-vung);">
+      <h3>AOV</h3>
+      <ul>
+        <li><strong>Bền vững / Nền móng</strong>: +3-5% (giảm từ +7-10% của Plan D)</li>
+        <li><strong>Phát triển</strong>: 0-2% (tránh rủi ro mất khách khi đã khỏe)</li>
+        <li><strong>Top 5 Phát triển</strong>: AOV +1% (tùy chọn) — thêm 0,19 tỷ</li>
+      </ul>
+    </div>
+
+    <div class="lever-card" style="border-top-color:var(--dinh-hinh);">
+      <h3>Nhân sự</h3>
+      <ul>
+        <li>Điều thợ giỏi: <strong>Bền vững → Phát triển / Định hình</strong></li>
+        <li>Tuyển <strong>10 stylist bậc cao</strong> cho Định hình</li>
+        <li>Buffer TD ĐT <strong>+200M</strong> cho Định hình + Nền móng</li>
+        <li>Bền vững có thể bớt thợ tốt → nhóm cần hơn</li>
+      </ul>
+    </div>
+
+    <div class="lever-card" style="border-top-color:var(--nen-mong);">
+      <h3>Chi phí (tổng 3,59 tỷ)</h3>
+      <table style="font-size:11.5px;">
+        <tr><td>3VT (ST+SK+SUP) — 70% scale</td><td class="num"><strong>+1,94</strong></td></tr>
+        <tr><td>Thưởng ĐL KD (-50%)</td><td class="num"><strong>+0,55</strong></td></tr>
+        <tr><td>Điện (-1%)</td><td class="num"><strong>+0,29</strong></td></tr>
+        <tr><td>Vật tư (siết 6% + 0.5pt nếu >7%)</td><td class="num"><strong>+0,26</strong></td></tr>
+        <tr><td>Marketing (Khỏe +10%, Yếu -15%)</td><td class="num"><strong>+0,22</strong></td></tr>
+        <tr><td>CSLN (0.5→0.45%)</td><td class="num"><strong>+0,14</strong></td></tr>
+        <tr><td>SCBT (1.6 tỷ)</td><td class="num"><strong>+0,07</strong></td></tr>
+        <tr><td>Thuê DDKD (3 salon -3%)</td><td class="num"><strong>+0,06</strong></td></tr>
+        <tr><td>TD ĐT (760tr, buffer 200M)</td><td class="num"><strong>+0,06</strong></td></tr>
+        <tr><td>Công tác phí (40tr)</td><td class="num"><strong>+0,01</strong></td></tr>
+        <tr style="background:var(--bg); font-weight:bold;"><td>TỔNG</td><td class="num">+3,59 tỷ</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="s7">
+  <h2>7. Tính khả thi &amp; Rủi ro Plan E-Final</h2>
+
+  <h3>Phân bổ tính khả thi</h3>
+  <div class="stat-grid">
+    <div class="stat" style="border-left-color:var(--phat-trien);"><div class="label">Khả thi</div><div class="value">55/58</div><div class="sub">94,8%</div></div>
+    <div class="stat" style="border-left-color:var(--dinh-hinh);"><div class="label">Thách thức</div><div class="value">3/58</div><div class="sub">255 NAN · 451 PVT · 55A NVL</div></div>
+    <div class="stat" style="border-left-color:var(--phat-trien);"><div class="label">Critical</div><div class="value">0</div><div class="sub">Không có salon lỗ sâu</div></div>
+  </div>
+
+  <h3>Stress test — 6 kịch bản</h3>
+  <table>
+    <thead>
+      <tr><th>Kịch bản</th><th class="num">EBITDA (tỷ)</th><th class="num">% vs Target cũ</th><th>Verdict</th></tr>
+    </thead>
+    <tbody>
+      <tr style="background:var(--green-bg);"><td><strong>Base case — Plan E-Final</strong></td><td class="num"><strong>31,45</strong></td><td class="num"><strong>95,0%</strong></td><td class="highlight-good">Baseline chính thức</td></tr>
+      <tr><td>LK -3% toàn hệ thống (kinh tế yếu)</td><td class="num">~28,3</td><td class="num">85%</td><td class="highlight-warn">Cảnh báo — chấp nhận được</td></tr>
+      <tr><td>Đàm phán thuê 3 salon fail</td><td class="num">31,39</td><td class="num">94,8%</td><td class="highlight-good">OK — chỉ mất 62M</td></tr>
+      <tr><td>MKT không kéo được LK (+1% nhóm khỏe)</td><td class="num">~30,9</td><td class="num">93,3%</td><td class="highlight-warn">Thách thức</td></tr>
+      <tr><td>3VT biến phí chỉ 50% (không 70%)</td><td class="num">30,80</td><td class="num">93,0%</td><td class="highlight-warn">Ngoài band 95%</td></tr>
+      <tr style="background:var(--red-bg);"><td><strong>Worst case</strong>: LK -3% + MKT fail + 3VT 50%</td><td class="num"><strong>~27,5</strong></td><td class="num"><strong>83,0%</strong></td><td class="highlight-bad">Cần kích hoạt Plan B</td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top:8px; color:var(--muted); font-size:12.5px;">
+    <strong>Stress pass:</strong> 4/6 kịch bản duy trì ≥ 93%. Worst case cần có Plan B (giảm TD ĐT, cắt phúc lợi, delay CCDC).
+  </p>
+
+  <h3>Top 3 rủi ro + Giảm thiểu</h3>
+  <table>
+    <thead>
+      <tr><th style="width:30%;">Rủi ro</th><th>Impact</th><th>Giảm thiểu</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>1. 3VT biến phí thực tế &lt; 70%</strong></td>
+        <td>Mất 1,1 tỷ EBITDA (≈3,4%) nếu chỉ biến phí 60%</td>
+        <td>HR + Vận hành lock kế hoạch điều chuyển thợ T5; track actual 3VT/LK ratio hàng tuần T5-T6</td>
+      </tr>
+      <tr>
+        <td><strong>2. Đàm phán thuê 3 salon fail</strong></td>
+        <td>Mất 62M — tác động nhỏ</td>
+        <td>GĐ Khối VH chủ trì; deadline T6; nếu fail → escalate CEO, tính phương án dời/đóng</td>
+      </tr>
+      <tr>
+        <td><strong>3. 11 salon Nền móng không đạt cột mốc</strong></td>
+        <td>Ăn mòn lợi nhuận nếu lỗ kéo dài</td>
+        <td>Dashboard riêng; 3-4 lần thanh tra/tháng; nếu >12 tháng không cải thiện → xem xét đóng cửa</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>4 điều kiện deploy</h3>
+  <table>
+    <thead>
+      <tr><th>Thời điểm</th><th>Việc</th><th>Action nếu lệch</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>T6 (end)</strong></td><td>Review LK, DTT, margin T5</td><td>EBITDA T5 &lt; 2,8 tỷ → trigger Plan B (cắt MKT, delay CCDC)</td></tr>
+      <tr><td><strong>T7 (giữa)</strong></td><td>Check 3 salon đàm phán thuê</td><td>Fail → escalate CEO, tính dời/đóng vị trí</td></tr>
+      <tr><td><strong>T9 (end)</strong></td><td>Mid-year review — hit rate 5 tháng</td><td>&lt; 85% → tái phân nhóm, chuyển ngân sách MKT</td></tr>
+      <tr><td><strong>Weekly</strong></td><td>Watch 3 salon Thách thức (255, 451, 55A NVL)</td><td>SM + GĐKV họp tuần + báo COO nếu lệch &gt;10%</td></tr>
+    </tbody>
+  </table>
+
+  <div class="card" style="margin-top:16px; background:var(--green-bg); border-left:4px solid var(--phat-trien);">
+    <strong>Kết luận Deploy:</strong> Plan E-Final chính thức làm baseline T5-T12.2026. Target EBITDA 31,45 tỷ (95,0% target cũ) · 58/58 salon có target per-salon · 11 salon Nền móng dùng cột mốc · 3 salon critical đàm phán thuê -3%.
+  </div>
+</section>
+
+<div class="watermark">
+  Nguồn: pa9_results.json · m2_master_target_review.json · M5_PlanE_Final.xlsx · _plan_e_final_savings.json<br/>
+  Tạo lúc: 23/04/2026 · Chuẩn bị bởi GĐ Khối Vận hành
+</div>
+</main>
+
+<script>
+const GROUP_COLOR = {"Phát triển": "#4CAF50", "Định hình": "#FF9800", "Bền vững": "#2196F3", "Nền móng": "#F44336", "Không đủ data": "#9E9E9E"};
+const BUBBLE = {"Phát triển": [{"x": 2.14, "y": 14.6, "r": 32, "name": "103 TN", "dtt": 1037.1, "gdkv": "Nguyễn Việt Cường"}, {"x": 2.84, "y": 2.4, "r": 7.706666666666666, "name": "11 PKT", "dtt": 231.2, "gdkv": "Hoàng Nguyên Hội"}, {"x": 2.93, "y": 10.8, "r": 23.85666666666667, "name": "116 TK", "dtt": 715.7, "gdkv": "Đoàn Trung Đức"}, {"x": 1.45, "y": 8.8, "r": 12.373333333333333, "name": "1180 QT", "dtt": 371.2, "gdkv": "Trịnh Văn Quang"}, {"x": 5.31, "y": 5.7, "r": 22.94333333333333, "name": "145 THT", "dtt": 688.3, "gdkv": "Nguyễn Thanh Sang"}, {"x": 2.44, "y": 5.5, "r": 18.66, "name": "186 DTH", "dtt": 559.8, "gdkv": "Tống Xuân Quyền"}, {"x": 1.29, "y": 4.1, "r": 12.66, "name": "190 HB", "dtt": 379.8, "gdkv": "Nguyễn Thanh Sang"}, {"x": 4.64, "y": 6.2, "r": 25.276666666666664, "name": "237 NTT", "dtt": 758.3, "gdkv": "Tống Xuân Quyền"}, {"x": 1.09, "y": 1.3, "r": 20.686666666666667, "name": "25 TD", "dtt": 620.6, "gdkv": "Tống Xuân Quyền"}, {"x": 2.93, "y": 4.2, "r": 6.1466666666666665, "name": "290 QT TH", "dtt": 184.4, "gdkv": "Nguyễn Thị Huệ"}, {"x": 1.94, "y": 7.2, "r": 22.923333333333336, "name": "312 LVS", "dtt": 687.7, "gdkv": "Nguyễn Thanh Sang"}, {"x": 2.46, "y": 1.8, "r": 9.3, "name": "36 N1 BD", "dtt": 279.0, "gdkv": "Nguyễn Việt Cường"}, {"x": 2.24, "y": 7.0, "r": 18.85, "name": "50BT4 NPC LD", "dtt": 565.5, "gdkv": "Phan Thị Hồng Gấm"}, {"x": 1.81, "y": 4.1, "r": 11.93, "name": "55A NVL", "dtt": 357.9, "gdkv": "Đoàn Trung Đức"}, {"x": 3.7, "y": 2.6, "r": 16.35, "name": "575 AC", "dtt": 490.5, "gdkv": "Nguyễn Thanh Sang"}, {"x": 2.5, "y": 5.1, "r": 6.713333333333334, "name": "595 BT TH", "dtt": 201.4, "gdkv": "Nguyễn Thị Huệ"}, {"x": 1.12, "y": 2.3, "r": 16.77, "name": "730 TL10", "dtt": 503.1, "gdkv": "Nguyễn Thanh Sang"}, {"x": 3.58, "y": 10.3, "r": 8.19, "name": "80 TP TH", "dtt": 245.7, "gdkv": "Nguyễn Thị Huệ"}, {"x": 2.14, "y": 12.7, "r": 28.14333333333333, "name": "927 HG", "dtt": 844.3, "gdkv": "Nguyễn Thanh Sang"}, {"x": 1.15, "y": 11.3, "r": 24.206666666666667, "name": "99 TSN", "dtt": 726.2, "gdkv": "Nguyễn Thanh Sang"}], "Định hình": [{"x": 5.48, "y": -2.3, "r": 6.376666666666667, "name": "148 TD", "dtt": 191.3, "gdkv": "Phan Thị Hồng Gấm"}, {"x": 2.15, "y": -7.1, "r": 10.639999999999999, "name": "151 CG", "dtt": 319.2, "gdkv": "Đoàn Trung Đức"}, {"x": 7.61, "y": -0.8, "r": 11.79, "name": "173 TN", "dtt": 353.7, "gdkv": "Phan Thị Hồng Gấm"}, {"x": 2.53, "y": -8.7, "r": 7.88, "name": "341 XVNT", "dtt": 236.4, "gdkv": "Tống Xuân Quyền"}, {"x": 1.49, "y": -1.4, "r": 9.303333333333335, "name": "363 LNQ TN", "dtt": 279.1, "gdkv": "Phan Thị Hồng Gấm"}, {"x": 7.66, "y": -0.8, "r": 7.913333333333333, "name": "401/1 NDT", "dtt": 237.4, "gdkv": "Nguyễn Việt Cường"}, {"x": 5.84, "y": -2.3, "r": 7.316666666666666, "name": "62 LH", "dtt": 219.5, "gdkv": "Đoàn Trung Đức"}, {"x": 3.45, "y": -2.2, "r": 7.1433333333333335, "name": "65 CD", "dtt": 214.3, "gdkv": "Đoàn Trung Đức"}, {"x": 1.2, "y": -2.9, "r": 19.16, "name": "8 CVL", "dtt": 574.8, "gdkv": "Nguyễn Thanh Sang"}, {"x": 2.41, "y": -24.1, "r": 4, "name": "TG 25/4 QN", "dtt": 114.5, "gdkv": "Nguyễn Như Quỳnh"}], "Bền vững": [{"x": 0.15, "y": 5.3, "r": 18.39333333333333, "name": "10 TP", "dtt": 551.8, "gdkv": "Hoàng Nguyên Hội"}, {"x": 0.83, "y": 6.0, "r": 17.81, "name": "109 TQH", "dtt": 534.3, "gdkv": "Đoàn Trung Đức"}, {"x": 0.01, "y": 1.2, "r": 9.270000000000001, "name": "1146 KVC", "dtt": 278.1, "gdkv": "Nguyễn Việt Cường"}, {"x": -0.06, "y": 4.9, "r": 15.44, "name": "12 LDT", "dtt": 463.2, "gdkv": "Trịnh Văn Quang"}, {"x": 1.0, "y": 11.5, "r": 24.3, "name": "168 NVC", "dtt": 729.0, "gdkv": "Nguyễn Như Quỳnh"}, {"x": 0.73, "y": 10.5, "r": 15.183333333333334, "name": "202 DC", "dtt": 455.5, "gdkv": "Phan Thị Hồng Gấm"}, {"x": -0.56, "y": 1.7, "r": 13.896666666666667, "name": "264 LLQ", "dtt": 416.9, "gdkv": "Phan Thị Hồng Gấm"}, {"x": 0.48, "y": 5.5, "r": 6.253333333333333, "name": "304 NT TH", "dtt": 187.6, "gdkv": "Nguyễn Thị Huệ"}, {"x": -0.05, "y": 2.2, "r": 11.556666666666667, "name": "346 KT", "dtt": 346.7, "gdkv": "Phan Thị Hồng Gấm"}, {"x": 0.31, "y": 15.9, "r": 32, "name": "382 NT", "dtt": 1023.3, "gdkv": "Đoàn Trung Đức"}, {"x": -0.48, "y": 17.3, "r": 16.38, "name": "39 HBT", "dtt": 491.4, "gdkv": "Phan Thị Hồng Gấm"}, {"x": 0.3, "y": 1.6, "r": 19.759999999999998, "name": "420 HTP", "dtt": 592.8, "gdkv": "Tống Xuân Quyền"}, {"x": -0.4, "y": 3.4, "r": 13.879999999999999, "name": "483 TN", "dtt": 416.4, "gdkv": "Trịnh Văn Quang"}, {"x": 0.73, "y": 5.4, "r": 8.6, "name": "58 NVC NA", "dtt": 258.0, "gdkv": "Nguyễn Thị Huệ"}, {"x": -0.64, "y": 4.8, "r": 7.193333333333333, "name": "68 LN NA", "dtt": 215.8, "gdkv": "Nguyễn Thị Huệ"}, {"x": 0.01, "y": 11.9, "r": 6.88, "name": "7 DTP LA", "dtt": 206.4, "gdkv": "Tống Xuân Quyền"}, {"x": 0.89, "y": 5.7, "r": 9.153333333333334, "name": "76 PVH", "dtt": 274.6, "gdkv": "Trịnh Văn Quang"}, {"x": -0.84, "y": 0.3, "r": 13.41, "name": "80 PL BD", "dtt": 402.3, "gdkv": "Nguyễn Việt Cường"}], "Nền móng": [{"x": -1.17, "y": -4.2, "r": 7.513333333333334, "name": "113 THD AG", "dtt": 225.4, "gdkv": "Tống Xuân Quyền"}, {"x": -0.38, "y": -0.8, "r": 8.143333333333334, "name": "1371 PVT", "dtt": 244.3, "gdkv": "Nguyễn Việt Cường"}, {"x": 0.28, "y": -4.1, "r": 4.703333333333333, "name": "186 QT", "dtt": 141.1, "gdkv": "Hoàng Nguyên Hội"}, {"x": 0.52, "y": -3.0, "r": 15.370000000000001, "name": "236 DBT", "dtt": 461.1, "gdkv": "Tống Xuân Quyền"}, {"x": 0.64, "y": -2.3, "r": 13.92, "name": "255 NAN", "dtt": 417.6, "gdkv": "Nguyễn Việt Cường"}, {"x": 0.35, "y": -0.3, "r": 15.466666666666667, "name": "29 HB", "dtt": 464.0, "gdkv": "Nguyễn Việt Cường"}, {"x": 0.79, "y": -6.8, "r": 8.02, "name": "32 NAT", "dtt": 240.6, "gdkv": "Trịnh Văn Quang"}, {"x": 0.85, "y": -0.7, "r": 4.553333333333333, "name": "4 LQD BN", "dtt": 136.6, "gdkv": "Nguyễn Như Quỳnh"}, {"x": -1.13, "y": -18.2, "r": 7.176666666666667, "name": "451 PVT", "dtt": 215.3, "gdkv": "Nguyễn Việt Cường"}, {"x": -0.51, "y": -2.0, "r": 9.203333333333335, "name": "708 LTT", "dtt": 276.1, "gdkv": "Nguyễn Thanh Sang"}, {"x": -0.92, "y": -2.1, "r": 12.346666666666666, "name": "90 NH", "dtt": 370.4, "gdkv": "Đoàn Trung Đức"}]};
+const HITRATE = [{"x": 13.8180524256, "y": 81.2005002084, "name": "10 TP", "nhom": "Bền vững"}, {"x": 8.5491287512, "y": 97.9711275849, "name": "103 TN", "nhom": "Phát triển"}, {"x": 20.2976846748, "y": 85.2259187975, "name": "109 TQH", "nhom": "Bền vững"}, {"x": 6.914457502, "y": 112.1421267894, "name": "11 PKT", "nhom": "Phát triển"}, {"x": -3.3415841584, "y": 75.7789159198, "name": "113 THD AG", "nhom": "Nền móng"}, {"x": 24.5421974522, "y": 70.3532044111, "name": "1146 KVC", "nhom": "Bền vững"}, {"x": 4.1208508889, "y": 117.6470588235, "name": "116 TK", "nhom": "Phát triển"}, {"x": 32.8989080662, "y": 78.3991518685, "name": "1180 QT", "nhom": "Phát triển"}, {"x": 15.2717762111, "y": 73.305711749, "name": "12 LDT", "nhom": "Bền vững"}, {"x": 16.7997161611, "y": 70.1549210207, "name": "1371 PVT", "nhom": "Nền móng"}, {"x": 52.7766719745, "y": 95.8048335613, "name": "145 THT", "nhom": "Phát triển"}, {"x": 89.4818854694, "y": 81.4761513158, "name": "148 TD", "nhom": "Định hình"}, {"x": -3.2066508314, "y": 102.2369042001, "name": "168 NVC", "nhom": "Bền vững"}, {"x": 65.613842351, "y": 106.6666666667, "name": "173 TN", "nhom": "Định hình"}, {"x": 41.2590799031, "y": 76.8255056565, "name": "186 DTH", "nhom": "Phát triển"}, {"x": 16.4453125, "y": 79.0338812479, "name": "186 QT", "nhom": "Nền móng"}, {"x": 19.1022964509, "y": 79.5918367347, "name": "190 HB", "nhom": "Phát triển"}, {"x": 2.5273481705, "y": 90.5322541084, "name": "202 DC", "nhom": "Bền vững"}, {"x": 13.2530120482, "y": 81.5957446809, "name": "236 DBT", "nhom": "Nền móng"}, {"x": 35.7530468819, "y": 96.7431192661, "name": "237 NTT", "nhom": "Phát triển"}, {"x": 10.0423160285, "y": 94.1568186081, "name": "25 TD", "nhom": "Phát triển"}, {"x": -2.7158689563, "y": 95.4056084126, "name": "255 NAN", "nhom": "Nền móng"}, {"x": 3.2879665813, "y": 80.0260926288, "name": "264 LLQ", "nhom": "Bền vững"}, {"x": 2.2682009294, "y": 86.2382343395, "name": "29 HB", "nhom": "Nền móng"}, {"x": 6.9158225637, "y": 111.7281934008, "name": "290 QT TH", "nhom": "Phát triển"}, {"x": -0.3832641329, "y": 95.319012504, "name": "304 NT TH", "nhom": "Bền vững"}, {"x": 16.2643484132, "y": 89.4373865699, "name": "312 LVS", "nhom": "Phát triển"}, {"x": 43.9393939394, "y": 65.4302422723, "name": "32 NAT", "nhom": "Nền móng"}, {"x": 107.3915372255, "y": 54.8941115702, "name": "341 XVNT", "nhom": "Định hình"}, {"x": 18.1386203506, "y": 76.2968099861, "name": "346 KT", "nhom": "Bền vững"}, {"x": 3.2175925926, "y": 107.0419376542, "name": "36 N1 BD", "nhom": "Phát triển"}, {"x": -15.8583050149, "y": 116.6319911883, "name": "362 NGT BN", "nhom": "Khong du data"}, {"x": 5.5810079134, "y": 95.8777120316, "name": "363 LNQ TN", "nhom": "Định hình"}, {"x": -5.6522922051, "y": 96.6909379281, "name": "382 NT", "nhom": "Bền vững"}, {"x": 0.2641841741, "y": 89.5483061481, "name": "39 HBT", "nhom": "Bền vững"}, {"x": -6.8812430633, "y": 94.7159316647, "name": "4 LQD BN", "nhom": "Nền móng"}, {"x": 82.2874493927, "y": 85.8041828614, "name": "401/1 NDT", "nhom": "Định hình"}, {"x": 1.186509549, "y": 92.8921371777, "name": "420 HTP", "nhom": "Bền vững"}, {"x": 15.8971243418, "y": 60.7024287961, "name": "451 PVT", "nhom": "Nền móng"}, {"x": 5.0866199779, "y": 82.5207529522, "name": "483 TN", "nhom": "Bền vững"}, {"x": 8.8158919761, "y": 103.1261186016, "name": "50BT4 NPC LD", "nhom": "Phát triển"}, {"x": -6.6336256195, "y": 119.8856676194, "name": "55A NVL", "nhom": "Phát triển"}, {"x": 16.594488189, "y": 75.5866959311, "name": "58 NVC NA", "nhom": "Bền vững"}, {"x": -1.4325646401, "y": 108.9684509039, "name": "595 BT TH", "nhom": "Phát triển"}, {"x": 67.1500630517, "y": 82.6480573369, "name": "62 LH", "nhom": "Định hình"}, {"x": 21.0100356102, "y": 105.2701979668, "name": "65 CD", "nhom": "Định hình"}, {"x": -19.0168818272, "y": 108.06253832, "name": "68 LN NA", "nhom": "Bền vững"}, {"x": -7.4953445065, "y": 88.6763965778, "name": "7 DTP LA", "nhom": "Bền vững"}, {"x": 5.3252443546, "y": 77.184, "name": "708 LTT", "nhom": "Nền móng"}, {"x": 6.9420826248, "y": 89.8793377607, "name": "730 TL10", "nhom": "Phát triển"}, {"x": 20.8771929825, "y": 82.2931785196, "name": "76 PVH", "nhom": "Bền vững"}, {"x": 23.917272448, "y": 78.1376518219, "name": "8 CVL", "nhom": "Định hình"}, {"x": -2.0603946364, "y": 78.8958147818, "name": "80 PL BD", "nhom": "Bền vững"}, {"x": 14.0520246715, "y": 102.6099224077, "name": "80 TP TH", "nhom": "Phát triển"}, {"x": 12.2515574014, "y": 69.6617336152, "name": "90 NH", "nhom": "Nền móng"}, {"x": 12.6011255716, "y": 96.2358453729, "name": "927 HG", "nhom": "Phát triển"}, {"x": 5.6975593668, "y": 92.8777595756, "name": "99 TSN", "nhom": "Phát triển"}];
+const MONTHLY = {"103 TN": {"nhom": "Phát triển", "LK": {"T5": "4.583", "T6": "5.156", "T7": "5.156", "T8": "4.583", "T9": "4.392", "T10": "4.583", "T11": "4.583", "T12": "5.156", "Tong": "38.195"}, "DTT (tr)": {"T5": "1.094", "T6": "1.231", "T7": "1.231", "T8": "1.094", "T9": "1.048", "T10": "1.094", "T11": "1.094", "T12": "1.231", "Tong": "9.116"}, "EBITDA (tr)": {"T5": "248", "T6": "279", "T7": "279", "T8": "248", "T9": "238", "T10": "248", "T11": "248", "T12": "279", "Tong": "2.068"}}, "145 THT": {"nhom": "Phát triển", "LK": {"T5": "3.922", "T6": "4.413", "T7": "4.413", "T8": "3.922", "T9": "3.759", "T10": "3.922", "T11": "3.922", "T12": "4.413", "Tong": "32.687"}, "DTT (tr)": {"T5": "973", "T6": "1.095", "T7": "1.095", "T8": "973", "T9": "933", "T10": "973", "T11": "973", "T12": "1.095", "Tong": "8.111"}, "EBITDA (tr)": {"T5": "219", "T6": "247", "T7": "247", "T8": "219", "T9": "210", "T10": "219", "T11": "219", "T12": "247", "Tong": "1.827"}}, "237 NTT": {"nhom": "Phát triển", "LK": {"T5": "3.899", "T6": "4.386", "T7": "4.386", "T8": "3.899", "T9": "3.736", "T10": "3.899", "T11": "3.899", "T12": "4.386", "Tong": "32.490"}, "DTT (tr)": {"T5": "856", "T6": "963", "T7": "963", "T8": "856", "T9": "820", "T10": "856", "T11": "856", "T12": "963", "Tong": "7.131"}, "EBITDA (tr)": {"T5": "130", "T6": "146", "T7": "146", "T8": "130", "T9": "125", "T10": "130", "T11": "130", "T12": "146", "Tong": "1.083"}}, "927 HG": {"nhom": "Phát triển", "LK": {"T5": "3.272", "T6": "3.681", "T7": "3.681", "T8": "3.272", "T9": "3.135", "T10": "3.272", "T11": "3.272", "T12": "3.681", "Tong": "27.264"}, "DTT (tr)": {"T5": "855", "T6": "962", "T7": "962", "T8": "855", "T9": "819", "T10": "855", "T11": "855", "T12": "962", "Tong": "7.123"}, "EBITDA (tr)": {"T5": "158", "T6": "177", "T7": "177", "T8": "158", "T9": "151", "T10": "158", "T11": "158", "T12": "177", "Tong": "1.314"}}, "99 TSN": {"nhom": "Phát triển", "LK": {"T5": "3.275", "T6": "3.685", "T7": "3.685", "T8": "3.275", "T9": "3.139", "T10": "3.275", "T11": "3.275", "T12": "3.685", "Tong": "27.293"}, "DTT (tr)": {"T5": "787", "T6": "886", "T7": "886", "T8": "787", "T9": "754", "T10": "787", "T11": "787", "T12": "886", "Tong": "6.561"}, "EBITDA (tr)": {"T5": "160", "T6": "180", "T7": "180", "T8": "160", "T9": "153", "T10": "160", "T11": "160", "T12": "180", "Tong": "1.331"}}, "312 LVS": {"nhom": "Phát triển", "LK": {"T5": "3.520", "T6": "3.960", "T7": "3.960", "T8": "3.520", "T9": "3.373", "T10": "3.520", "T11": "3.520", "T12": "3.960", "Tong": "29.331"}, "DTT (tr)": {"T5": "767", "T6": "863", "T7": "863", "T8": "767", "T9": "735", "T10": "767", "T11": "767", "T12": "863", "Tong": "6.392"}, "EBITDA (tr)": {"T5": "116", "T6": "130", "T7": "130", "T8": "116", "T9": "111", "T10": "116", "T11": "116", "T12": "130", "Tong": "964"}}, "25 TD": {"nhom": "Phát triển", "LK": {"T5": "2.723", "T6": "3.063", "T7": "3.063", "T8": "2.723", "T9": "2.610", "T10": "2.723", "T11": "2.723", "T12": "3.063", "Tong": "22.692"}, "DTT (tr)": {"T5": "691", "T6": "777", "T7": "777", "T8": "691", "T9": "662", "T10": "691", "T11": "691", "T12": "777", "Tong": "5.758"}, "EBITDA (tr)": {"T5": "85", "T6": "96", "T7": "96", "T8": "85", "T9": "82", "T10": "85", "T11": "85", "T12": "96", "Tong": "712"}}, "186 DTH": {"nhom": "Phát triển", "LK": {"T5": "2.982", "T6": "3.354", "T7": "3.354", "T8": "2.982", "T9": "2.857", "T10": "2.982", "T11": "2.982", "T12": "3.354", "Tong": "24.847"}, "DTT (tr)": {"T5": "690", "T6": "776", "T7": "776", "T8": "690", "T9": "661", "T10": "690", "T11": "690", "T12": "776", "Tong": "5.746"}, "EBITDA (tr)": {"T5": "104", "T6": "117", "T7": "117", "T8": "104", "T9": "100", "T10": "104", "T11": "104", "T12": "117", "Tong": "869"}}, "575 AC": {"nhom": "Phát triển", "LK": {"T5": "2.616", "T6": "2.944", "T7": "2.944", "T8": "2.616", "T9": "2.507", "T10": "2.616", "T11": "2.616", "T12": "2.944", "Tong": "21.804"}, "DTT (tr)": {"T5": "611", "T6": "687", "T7": "687", "T8": "611", "T9": "585", "T10": "611", "T11": "611", "T12": "687", "Tong": "5.090"}, "EBITDA (tr)": {"T5": "110", "T6": "124", "T7": "124", "T8": "110", "T9": "105", "T10": "110", "T11": "110", "T12": "124", "Tong": "917"}}, "116 TK": {"nhom": "Phát triển", "LK": {"T5": "2.589", "T6": "2.912", "T7": "2.912", "T8": "2.589", "T9": "2.481", "T10": "2.589", "T11": "2.589", "T12": "2.912", "Tong": "21.571"}, "DTT (tr)": {"T5": "607", "T6": "683", "T7": "683", "T8": "607", "T9": "582", "T10": "607", "T11": "607", "T12": "683", "Tong": "5.059"}, "EBITDA (tr)": {"T5": "74", "T6": "83", "T7": "83", "T8": "74", "T9": "71", "T10": "74", "T11": "74", "T12": "83", "Tong": "615"}}, "50BT4 NPC LD": {"nhom": "Phát triển", "LK": {"T5": "2.142", "T6": "2.410", "T7": "2.410", "T8": "2.142", "T9": "2.053", "T10": "2.142", "T11": "2.142", "T12": "2.410", "Tong": "17.850"}, "DTT (tr)": {"T5": "596", "T6": "670", "T7": "670", "T8": "596", "T9": "571", "T10": "596", "T11": "596", "T12": "670", "Tong": "4.966"}, "EBITDA (tr)": {"T5": "54", "T6": "60", "T7": "60", "T8": "54", "T9": "52", "T10": "54", "T11": "54", "T12": "60", "Tong": "448"}}, "730 TL10": {"nhom": "Phát triển", "LK": {"T5": "2.731", "T6": "3.073", "T7": "3.073", "T8": "2.731", "T9": "2.618", "T10": "2.731", "T11": "2.731", "T12": "3.073", "Tong": "22.761"}, "DTT (tr)": {"T5": "534", "T6": "601", "T7": "601", "T8": "534", "T9": "512", "T10": "534", "T11": "534", "T12": "601", "Tong": "4.450"}, "EBITDA (tr)": {"T5": "65", "T6": "73", "T7": "73", "T8": "65", "T9": "62", "T10": "65", "T11": "65", "T12": "73", "Tong": "540"}}, "1180 QT": {"nhom": "Phát triển", "LK": {"T5": "1.929", "T6": "2.170", "T7": "2.170", "T8": "1.929", "T9": "1.848", "T10": "1.929", "T11": "1.929", "T12": "2.170", "Tong": "16.071"}, "DTT (tr)": {"T5": "492", "T6": "553", "T7": "553", "T8": "492", "T9": "471", "T10": "492", "T11": "492", "T12": "553", "Tong": "4.096"}, "EBITDA (tr)": {"T5": "89", "T6": "100", "T7": "100", "T8": "89", "T9": "85", "T10": "89", "T11": "89", "T12": "100", "Tong": "740"}}, "190 HB": {"nhom": "Phát triển", "LK": {"T5": "2.041", "T6": "2.296", "T7": "2.296", "T8": "2.041", "T9": "1.956", "T10": "2.041", "T11": "2.041", "T12": "2.296", "Tong": "17.010"}, "DTT (tr)": {"T5": "448", "T6": "505", "T7": "505", "T8": "448", "T9": "430", "T10": "448", "T11": "448", "T12": "505", "Tong": "3.737"}, "EBITDA (tr)": {"T5": "50", "T6": "56", "T7": "56", "T8": "50", "T9": "48", "T10": "50", "T11": "50", "T12": "56", "Tong": "417"}}, "55A NVL": {"nhom": "Phát triển", "LK": {"T5": "1.251", "T6": "1.407", "T7": "1.407", "T8": "1.251", "T9": "1.199", "T10": "1.251", "T11": "1.251", "T12": "1.407", "Tong": "10.424"}, "DTT (tr)": {"T5": "297", "T6": "335", "T7": "335", "T8": "297", "T9": "285", "T10": "297", "T11": "297", "T12": "335", "Tong": "2.479"}, "EBITDA (tr)": {"T5": "7", "T6": "8", "T7": "8", "T8": "7", "T9": "7", "T10": "7", "T11": "7", "T12": "8", "Tong": "58"}}, "36 N1 BD": {"nhom": "Phát triển", "LK": {"T5": "1.139", "T6": "1.281", "T7": "1.281", "T8": "1.139", "T9": "1.091", "T10": "1.139", "T11": "1.139", "T12": "1.281", "Tong": "9.490"}, "DTT (tr)": {"T5": "268", "T6": "301", "T7": "301", "T8": "268", "T9": "257", "T10": "268", "T11": "268", "T12": "301", "Tong": "2.231"}, "EBITDA (tr)": {"T5": "42", "T6": "48", "T7": "48", "T8": "42", "T9": "41", "T10": "42", "T11": "42", "T12": "48", "Tong": "354"}}, "80 TP TH": {"nhom": "Phát triển", "LK": {"T5": "1.087", "T6": "1.223", "T7": "1.223", "T8": "1.087", "T9": "1.042", "T10": "1.087", "T11": "1.087", "T12": "1.223", "Tong": "9.062"}, "DTT (tr)": {"T5": "240", "T6": "270", "T7": "270", "T8": "240", "T9": "230", "T10": "240", "T11": "240", "T12": "270", "Tong": "2.003"}, "EBITDA (tr)": {"T5": "49", "T6": "56", "T7": "56", "T8": "49", "T9": "47", "T10": "49", "T11": "49", "T12": "56", "Tong": "412"}}, "11 PKT": {"nhom": "Phát triển", "LK": {"T5": "1.000", "T6": "1.125", "T7": "1.125", "T8": "1.000", "T9": "958", "T10": "1.000", "T11": "1.000", "T12": "1.125", "Tong": "8.333"}, "DTT (tr)": {"T5": "236", "T6": "266", "T7": "266", "T8": "236", "T9": "226", "T10": "236", "T11": "236", "T12": "266", "Tong": "1.969"}, "EBITDA (tr)": {"T5": "29", "T6": "33", "T7": "33", "T8": "29", "T9": "28", "T10": "29", "T11": "29", "T12": "33", "Tong": "245"}}, "290 QT TH": {"nhom": "Phát triển", "LK": {"T5": "783", "T6": "880", "T7": "880", "T8": "783", "T9": "750", "T10": "783", "T11": "783", "T12": "880", "Tong": "6.522"}, "DTT (tr)": {"T5": "174", "T6": "195", "T7": "195", "T8": "174", "T9": "166", "T10": "174", "T11": "174", "T12": "195", "Tong": "1.447"}, "EBITDA (tr)": {"T5": "18", "T6": "20", "T7": "20", "T8": "18", "T9": "17", "T10": "18", "T11": "18", "T12": "20", "Tong": "149"}}, "595 BT TH": {"nhom": "Phát triển", "LK": {"T5": "721", "T6": "811", "T7": "811", "T8": "721", "T9": "691", "T10": "721", "T11": "721", "T12": "811", "Tong": "6.008"}, "DTT (tr)": {"T5": "158", "T6": "178", "T7": "178", "T8": "158", "T9": "152", "T10": "158", "T11": "158", "T12": "178", "Tong": "1.321"}, "EBITDA (tr)": {"T5": "9", "T6": "11", "T7": "11", "T8": "9", "T9": "9", "T10": "9", "T11": "9", "T12": "11", "Tong": "79"}}, "8 CVL": {"nhom": "Định hình", "LK": {"T5": "3.062", "T6": "3.444", "T7": "3.444", "T8": "3.062", "T9": "2.934", "T10": "3.062", "T11": "3.062", "T12": "3.444", "Tong": "25.514"}, "DTT (tr)": {"T5": "697", "T6": "784", "T7": "784", "T8": "697", "T9": "668", "T10": "697", "T11": "697", "T12": "784", "Tong": "5.809"}, "EBITDA (tr)": {"T5": "86", "T6": "96", "T7": "96", "T8": "86", "T9": "82", "T10": "86", "T11": "86", "T12": "96", "Tong": "714"}}, "341 XVNT": {"nhom": "Định hình", "LK": {"T5": "1.959", "T6": "2.204", "T7": "2.204", "T8": "1.959", "T9": "1.877", "T10": "1.959", "T11": "1.959", "T12": "2.204", "Tong": "16.323"}, "DTT (tr)": {"T5": "365", "T6": "410", "T7": "410", "T8": "365", "T9": "349", "T10": "365", "T11": "365", "T12": "410", "Tong": "3.039"}, "EBITDA (tr)": {"T5": "37", "T6": "41", "T7": "41", "T8": "37", "T9": "35", "T10": "37", "T11": "37", "T12": "41", "Tong": "307"}}, "173 TN": {"nhom": "Định hình", "LK": {"T5": "1.525", "T6": "1.715", "T7": "1.715", "T8": "1.525", "T9": "1.461", "T10": "1.525", "T11": "1.525", "T12": "1.715", "Tong": "12.705"}, "DTT (tr)": {"T5": "333", "T6": "375", "T7": "375", "T8": "333", "T9": "319", "T10": "333", "T11": "333", "T12": "375", "Tong": "2.777"}, "EBITDA (tr)": {"T5": "26", "T6": "29", "T7": "29", "T8": "26", "T9": "24", "T10": "26", "T11": "26", "T12": "29", "Tong": "213"}}, "363 LNQ TN": {"nhom": "Định hình", "LK": {"T5": "1.283", "T6": "1.444", "T7": "1.444", "T8": "1.283", "T9": "1.230", "T10": "1.283", "T11": "1.283", "T12": "1.444", "Tong": "10.694"}, "DTT (tr)": {"T5": "303", "T6": "341", "T7": "341", "T8": "303", "T9": "290", "T10": "303", "T11": "303", "T12": "341", "Tong": "2.522"}, "EBITDA (tr)": {"T5": "18", "T6": "20", "T7": "20", "T8": "18", "T9": "17", "T10": "18", "T11": "18", "T12": "20", "Tong": "146"}}, "62 LH": {"nhom": "Định hình", "LK": {"T5": "1.340", "T6": "1.508", "T7": "1.508", "T8": "1.340", "T9": "1.284", "T10": "1.340", "T11": "1.340", "T12": "1.508", "Tong": "11.169"}, "DTT (tr)": {"T5": "285", "T6": "320", "T7": "320", "T8": "285", "T9": "273", "T10": "285", "T11": "285", "T12": "320", "Tong": "2.373"}, "EBITDA (tr)": {"T5": "11", "T6": "12", "T7": "12", "T8": "11", "T9": "10", "T10": "11", "T11": "11", "T12": "12", "Tong": "89"}}, "401/1 NDT": {"nhom": "Định hình", "LK": {"T5": "1.367", "T6": "1.538", "T7": "1.538", "T8": "1.367", "T9": "1.310", "T10": "1.367", "T11": "1.367", "T12": "1.538", "Tong": "11.391"}, "DTT (tr)": {"T5": "270", "T6": "303", "T7": "303", "T8": "270", "T9": "258", "T10": "270", "T11": "270", "T12": "303", "Tong": "2.246"}, "EBITDA (tr)": {"T5": "42", "T6": "47", "T7": "47", "T8": "42", "T9": "40", "T10": "42", "T11": "42", "T12": "47", "Tong": "347"}}, "148 TD": {"nhom": "Định hình", "LK": {"T5": "1.230", "T6": "1.383", "T7": "1.383", "T8": "1.230", "T9": "1.178", "T10": "1.230", "T11": "1.230", "T12": "1.383", "Tong": "10.246"}, "DTT (tr)": {"T5": "239", "T6": "269", "T7": "269", "T8": "239", "T9": "229", "T10": "239", "T11": "239", "T12": "269", "Tong": "1.989"}, "EBITDA (tr)": {"T5": "36", "T6": "41", "T7": "41", "T8": "36", "T9": "35", "T10": "36", "T11": "36", "T12": "41", "Tong": "302"}}, "65 CD": {"nhom": "Định hình", "LK": {"T5": "946", "T6": "1.064", "T7": "1.064", "T8": "946", "T9": "906", "T10": "946", "T11": "946", "T12": "1.064", "Tong": "7.879"}, "DTT (tr)": {"T5": "221", "T6": "248", "T7": "248", "T8": "221", "T9": "211", "T10": "221", "T11": "221", "T12": "248", "Tong": "1.838"}, "EBITDA (tr)": {"T5": "28", "T6": "32", "T7": "32", "T8": "28", "T9": "27", "T10": "28", "T11": "28", "T12": "32", "Tong": "237"}}, "382 NT": {"nhom": "Bền vững", "LK": {"T5": "3.367", "T6": "3.788", "T7": "3.788", "T8": "3.367", "T9": "3.226", "T10": "3.367", "T11": "3.367", "T12": "3.788", "Tong": "28.056"}, "DTT (tr)": {"T5": "938", "T6": "1.055", "T7": "1.055", "T8": "938", "T9": "899", "T10": "938", "T11": "938", "T12": "1.055", "Tong": "7.818"}, "EBITDA (tr)": {"T5": "192", "T6": "216", "T7": "216", "T8": "192", "T9": "184", "T10": "192", "T11": "192", "T12": "216", "Tong": "1.602"}}, "168 NVC": {"nhom": "Bền vững", "LK": {"T5": "2.572", "T6": "2.893", "T7": "2.893", "T8": "2.572", "T9": "2.464", "T10": "2.572", "T11": "2.572", "T12": "2.893", "Tong": "21.430"}, "DTT (tr)": {"T5": "694", "T6": "781", "T7": "781", "T8": "694", "T9": "665", "T10": "694", "T11": "694", "T12": "781", "Tong": "5.784"}, "EBITDA (tr)": {"T5": "120", "T6": "135", "T7": "135", "T8": "120", "T9": "115", "T10": "120", "T11": "120", "T12": "135", "Tong": "1.000"}}, "420 HTP": {"nhom": "Bền vững", "LK": {"T5": "3.022", "T6": "3.400", "T7": "3.400", "T8": "3.022", "T9": "2.896", "T10": "3.022", "T11": "3.022", "T12": "3.400", "Tong": "25.184"}, "DTT (tr)": {"T5": "619", "T6": "696", "T7": "696", "T8": "619", "T9": "593", "T10": "619", "T11": "619", "T12": "696", "Tong": "5.158"}, "EBITDA (tr)": {"T5": "62", "T6": "70", "T7": "70", "T8": "62", "T9": "60", "T10": "62", "T11": "62", "T12": "70", "Tong": "520"}}, "10 TP": {"nhom": "Bền vững", "LK": {"T5": "2.330", "T6": "2.621", "T7": "2.621", "T8": "2.330", "T9": "2.233", "T10": "2.330", "T11": "2.330", "T12": "2.621", "Tong": "19.413"}, "DTT (tr)": {"T5": "610", "T6": "686", "T7": "686", "T8": "610", "T9": "584", "T10": "610", "T11": "610", "T12": "686", "Tong": "5.081"}, "EBITDA (tr)": {"T5": "101", "T6": "114", "T7": "114", "T8": "101", "T9": "97", "T10": "101", "T11": "101", "T12": "114", "Tong": "843"}}, "109 TQH": {"nhom": "Bền vững", "LK": {"T5": "2.648", "T6": "2.979", "T7": "2.979", "T8": "2.648", "T9": "2.538", "T10": "2.648", "T11": "2.648", "T12": "2.979", "Tong": "22.067"}, "DTT (tr)": {"T5": "600", "T6": "675", "T7": "675", "T8": "600", "T9": "575", "T10": "600", "T11": "600", "T12": "675", "Tong": "5.003"}, "EBITDA (tr)": {"T5": "94", "T6": "106", "T7": "106", "T8": "94", "T9": "90", "T10": "94", "T11": "94", "T12": "106", "Tong": "782"}}, "12 LDT": {"nhom": "Bền vững", "LK": {"T5": "2.460", "T6": "2.768", "T7": "2.768", "T8": "2.460", "T9": "2.358", "T10": "2.460", "T11": "2.460", "T12": "2.768", "Tong": "20.502"}, "DTT (tr)": {"T5": "593", "T6": "667", "T7": "667", "T8": "593", "T9": "568", "T10": "593", "T11": "593", "T12": "667", "Tong": "4.939"}, "EBITDA (tr)": {"T5": "84", "T6": "95", "T7": "95", "T8": "84", "T9": "81", "T10": "84", "T11": "84", "T12": "95", "Tong": "703"}}, "264 LLQ": {"nhom": "Bền vững", "LK": {"T5": "1.860", "T6": "2.093", "T7": "2.093", "T8": "1.860", "T9": "1.783", "T10": "1.860", "T11": "1.860", "T12": "2.093", "Tong": "15.503"}, "DTT (tr)": {"T5": "508", "T6": "571", "T7": "571", "T8": "508", "T9": "487", "T10": "508", "T11": "508", "T12": "571", "Tong": "4.232"}, "EBITDA (tr)": {"T5": "83", "T6": "93", "T7": "93", "T8": "83", "T9": "79", "T10": "83", "T11": "83", "T12": "93", "Tong": "690"}}, "202 DC": {"nhom": "Bền vững", "LK": {"T5": "1.978", "T6": "2.226", "T7": "2.226", "T8": "1.978", "T9": "1.896", "T10": "1.978", "T11": "1.978", "T12": "2.226", "Tong": "16.485"}, "DTT (tr)": {"T5": "493", "T6": "555", "T7": "555", "T8": "493", "T9": "473", "T10": "493", "T11": "493", "T12": "555", "Tong": "4.110"}, "EBITDA (tr)": {"T5": "69", "T6": "77", "T7": "77", "T8": "69", "T9": "66", "T10": "69", "T11": "69", "T12": "77", "Tong": "573"}}, "483 TN": {"nhom": "Bền vững", "LK": {"T5": "2.076", "T6": "2.336", "T7": "2.336", "T8": "2.076", "T9": "1.990", "T10": "2.076", "T11": "2.076", "T12": "2.336", "Tong": "17.301"}, "DTT (tr)": {"T5": "475", "T6": "535", "T7": "535", "T8": "475", "T9": "456", "T10": "475", "T11": "475", "T12": "535", "Tong": "3.961"}, "EBITDA (tr)": {"T5": "62", "T6": "70", "T7": "70", "T8": "62", "T9": "60", "T10": "62", "T11": "62", "T12": "70", "Tong": "520"}}, "80 PL BD": {"nhom": "Bền vững", "LK": {"T5": "2.180", "T6": "2.453", "T7": "2.453", "T8": "2.180", "T9": "2.089", "T10": "2.180", "T11": "2.180", "T12": "2.453", "Tong": "18.169"}, "DTT (tr)": {"T5": "469", "T6": "527", "T7": "527", "T8": "469", "T9": "449", "T10": "469", "T11": "469", "T12": "527", "Tong": "3.907"}, "EBITDA (tr)": {"T5": "38", "T6": "42", "T7": "42", "T8": "38", "T9": "36", "T10": "38", "T11": "38", "T12": "42", "Tong": "313"}}, "39 HBT": {"nhom": "Bền vững", "LK": {"T5": "1.935", "T6": "2.176", "T7": "2.176", "T8": "1.935", "T9": "1.854", "T10": "1.935", "T11": "1.935", "T12": "2.176", "Tong": "16.122"}, "DTT (tr)": {"T5": "456", "T6": "513", "T7": "513", "T8": "456", "T9": "437", "T10": "456", "T11": "456", "T12": "513", "Tong": "3.802"}, "EBITDA (tr)": {"T5": "101", "T6": "113", "T7": "113", "T8": "101", "T9": "96", "T10": "101", "T11": "101", "T12": "113", "Tong": "838"}}, "346 KT": {"nhom": "Bền vững", "LK": {"T5": "1.750", "T6": "1.969", "T7": "1.969", "T8": "1.750", "T9": "1.677", "T10": "1.750", "T11": "1.750", "T12": "1.969", "Tong": "14.584"}, "DTT (tr)": {"T5": "438", "T6": "493", "T7": "493", "T8": "438", "T9": "420", "T10": "438", "T11": "438", "T12": "493", "Tong": "3.651"}, "EBITDA (tr)": {"T5": "42", "T6": "47", "T7": "47", "T8": "42", "T9": "40", "T10": "42", "T11": "42", "T12": "47", "Tong": "348"}}, "58 NVC NA": {"nhom": "Bền vững", "LK": {"T5": "1.438", "T6": "1.618", "T7": "1.618", "T8": "1.438", "T9": "1.378", "T10": "1.438", "T11": "1.438", "T12": "1.618", "Tong": "11.982"}, "DTT (tr)": {"T5": "352", "T6": "396", "T7": "396", "T8": "352", "T9": "337", "T10": "352", "T11": "352", "T12": "396", "Tong": "2.930"}, "EBITDA (tr)": {"T5": "45", "T6": "50", "T7": "50", "T8": "45", "T9": "43", "T10": "45", "T11": "45", "T12": "50", "Tong": "371"}}, "1146 KVC": {"nhom": "Bền vững", "LK": {"T5": "1.519", "T6": "1.709", "T7": "1.709", "T8": "1.519", "T9": "1.456", "T10": "1.519", "T11": "1.519", "T12": "1.709", "Tong": "12.660"}, "DTT (tr)": {"T5": "345", "T6": "388", "T7": "388", "T8": "345", "T9": "330", "T10": "345", "T11": "345", "T12": "388", "Tong": "2.874"}, "EBITDA (tr)": {"T5": "70", "T6": "79", "T7": "79", "T8": "70", "T9": "67", "T10": "70", "T11": "70", "T12": "79", "Tong": "584"}}, "76 PVH": {"nhom": "Bền vững", "LK": {"T5": "1.505", "T6": "1.693", "T7": "1.693", "T8": "1.505", "T9": "1.442", "T10": "1.505", "T11": "1.505", "T12": "1.693", "Tong": "12.540"}, "DTT (tr)": {"T5": "332", "T6": "373", "T7": "373", "T8": "332", "T9": "318", "T10": "332", "T11": "332", "T12": "373", "Tong": "2.765"}, "EBITDA (tr)": {"T5": "44", "T6": "49", "T7": "49", "T8": "44", "T9": "42", "T10": "44", "T11": "44", "T12": "49", "Tong": "365"}}, "7 DTP LA": {"nhom": "Bền vững", "LK": {"T5": "965", "T6": "1.085", "T7": "1.085", "T8": "965", "T9": "924", "T10": "965", "T11": "965", "T12": "1.085", "Tong": "8.038"}, "DTT (tr)": {"T5": "206", "T6": "232", "T7": "232", "T8": "206", "T9": "198", "T10": "206", "T11": "206", "T12": "232", "Tong": "1.721"}, "EBITDA (tr)": {"T5": "30", "T6": "34", "T7": "34", "T8": "30", "T9": "29", "T10": "30", "T11": "30", "T12": "34", "Tong": "248"}}, "68 LN NA": {"nhom": "Bền vững", "LK": {"T5": "792", "T6": "890", "T7": "890", "T8": "792", "T9": "759", "T10": "792", "T11": "792", "T12": "890", "Tong": "6.596"}, "DTT (tr)": {"T5": "203", "T6": "228", "T7": "228", "T8": "203", "T9": "194", "T10": "203", "T11": "203", "T12": "228", "Tong": "1.688"}, "EBITDA (tr)": {"T5": "11", "T6": "13", "T7": "13", "T8": "11", "T9": "11", "T10": "11", "T11": "11", "T12": "13", "Tong": "94"}}, "304 NT TH": {"nhom": "Bền vững", "LK": {"T5": "756", "T6": "851", "T7": "851", "T8": "756", "T9": "725", "T10": "756", "T11": "756", "T12": "851", "Tong": "6.301"}, "DTT (tr)": {"T5": "191", "T6": "215", "T7": "215", "T8": "191", "T9": "183", "T10": "191", "T11": "191", "T12": "215", "Tong": "1.589"}, "EBITDA (tr)": {"T5": "41", "T6": "46", "T7": "46", "T8": "41", "T9": "39", "T10": "41", "T11": "41", "T12": "46", "Tong": "341"}}, "90 NH": {"nhom": "Nền móng", "LK": {"T5": "1.760", "T6": "1.980", "T7": "1.980", "T8": "1.760", "T9": "1.687", "T10": "1.760", "T11": "1.760", "T12": "1.980", "Tong": "14.666"}, "DTT (tr)": {"T5": "490", "T6": "552", "T7": "552", "T8": "490", "T9": "470", "T10": "490", "T11": "490", "T12": "552", "Tong": "4.087"}, "EBITDA (tr)": {"T5": "49", "T6": "55", "T7": "55", "T8": "49", "T9": "47", "T10": "49", "T11": "49", "T12": "55", "Tong": "406"}}, "236 DBT": {"nhom": "Nền móng", "LK": {"T5": "2.404", "T6": "2.705", "T7": "2.705", "T8": "2.404", "T9": "2.304", "T10": "2.404", "T11": "2.404", "T12": "2.705", "Tong": "20.035"}, "DTT (tr)": {"T5": "478", "T6": "538", "T7": "538", "T8": "478", "T9": "458", "T10": "478", "T11": "478", "T12": "538", "Tong": "3.987"}, "EBITDA (tr)": {"T5": "48", "T6": "54", "T7": "54", "T8": "48", "T9": "46", "T10": "48", "T11": "48", "T12": "54", "Tong": "399"}}, "29 HB": {"nhom": "Nền móng", "LK": {"T5": "2.149", "T6": "2.418", "T7": "2.418", "T8": "2.149", "T9": "2.060", "T10": "2.149", "T11": "2.149", "T12": "2.418", "Tong": "17.910"}, "DTT (tr)": {"T5": "468", "T6": "527", "T7": "527", "T8": "468", "T9": "449", "T10": "468", "T11": "468", "T12": "527", "Tong": "3.903"}, "EBITDA (tr)": {"T5": "39", "T6": "43", "T7": "43", "T8": "39", "T9": "37", "T10": "39", "T11": "39", "T12": "43", "Tong": "322"}}, "255 NAN": {"nhom": "Nền móng", "LK": {"T5": "1.858", "T6": "2.090", "T7": "2.090", "T8": "1.858", "T9": "1.781", "T10": "1.858", "T11": "1.858", "T12": "2.090", "Tong": "15.483"}, "DTT (tr)": {"T5": "401", "T6": "451", "T7": "451", "T8": "401", "T9": "384", "T10": "401", "T11": "401", "T12": "451", "Tong": "3.341"}, "EBITDA (tr)": {"T5": "3", "T6": "3", "T7": "3", "T8": "3", "T9": "3", "T10": "3", "T11": "3", "T12": "3", "Tong": "22"}}, "1371 PVT": {"nhom": "Nền móng", "LK": {"T5": "1.531", "T6": "1.722", "T7": "1.722", "T8": "1.531", "T9": "1.467", "T10": "1.531", "T11": "1.531", "T12": "1.722", "Tong": "12.759"}, "DTT (tr)": {"T5": "356", "T6": "400", "T7": "400", "T8": "356", "T9": "341", "T10": "356", "T11": "356", "T12": "400", "Tong": "2.966"}, "EBITDA (tr)": {"T5": "57", "T6": "64", "T7": "64", "T8": "57", "T9": "55", "T10": "57", "T11": "57", "T12": "64", "Tong": "477"}}, "32 NAT": {"nhom": "Nền móng", "LK": {"T5": "1.391", "T6": "1.565", "T7": "1.565", "T8": "1.391", "T9": "1.333", "T10": "1.391", "T11": "1.391", "T12": "1.565", "Tong": "11.594"}, "DTT (tr)": {"T5": "349", "T6": "393", "T7": "393", "T8": "349", "T9": "334", "T10": "349", "T11": "349", "T12": "393", "Tong": "2.908"}, "EBITDA (tr)": {"T5": "36", "T6": "40", "T7": "40", "T8": "36", "T9": "34", "T10": "36", "T11": "36", "T12": "40", "Tong": "299"}}, "451 PVT": {"nhom": "Nền móng", "LK": {"T5": "1.331", "T6": "1.497", "T7": "1.497", "T8": "1.331", "T9": "1.275", "T10": "1.331", "T11": "1.331", "T12": "1.497", "Tong": "11.088"}, "DTT (tr)": {"T5": "303", "T6": "341", "T7": "341", "T8": "303", "T9": "290", "T10": "303", "T11": "303", "T12": "341", "Tong": "2.524"}, "EBITDA (tr)": {"T5": "1", "T6": "2", "T7": "2", "T8": "1", "T9": "1", "T10": "1", "T11": "1", "T12": "2", "Tong": "12"}}, "708 LTT": {"nhom": "Nền móng", "LK": {"T5": "1.454", "T6": "1.635", "T7": "1.635", "T8": "1.454", "T9": "1.393", "T10": "1.454", "T11": "1.454", "T12": "1.635", "Tong": "12.114"}, "DTT (tr)": {"T5": "294", "T6": "331", "T7": "331", "T8": "294", "T9": "282", "T10": "294", "T11": "294", "T12": "331", "Tong": "2.452"}, "EBITDA (tr)": {"T5": "23", "T6": "25", "T7": "25", "T8": "23", "T9": "22", "T10": "23", "T11": "23", "T12": "25", "Tong": "188"}}, "113 THD AG": {"nhom": "Nền móng", "LK": {"T5": "1.090", "T6": "1.227", "T7": "1.227", "T8": "1.090", "T9": "1.045", "T10": "1.090", "T11": "1.090", "T12": "1.227", "Tong": "9.087"}, "DTT (tr)": {"T5": "238", "T6": "268", "T7": "268", "T8": "238", "T9": "228", "T10": "238", "T11": "238", "T12": "268", "Tong": "1.982"}, "EBITDA (tr)": {"T5": "18", "T6": "20", "T7": "20", "T8": "18", "T9": "17", "T10": "18", "T11": "18", "T12": "20", "Tong": "147"}}, "186 QT": {"nhom": "Nền móng", "LK": {"T5": "693", "T6": "780", "T7": "780", "T8": "693", "T9": "664", "T10": "693", "T11": "693", "T12": "780", "Tong": "5.777"}, "DTT (tr)": {"T5": "177", "T6": "199", "T7": "199", "T8": "177", "T9": "170", "T10": "177", "T11": "177", "T12": "199", "Tong": "1.475"}, "EBITDA (tr)": {"T5": "16", "T6": "18", "T7": "18", "T8": "16", "T9": "15", "T10": "16", "T11": "16", "T12": "18", "Tong": "133"}}, "4 LQD BN": {"nhom": "Nền móng", "LK": {"T5": "585", "T6": "658", "T7": "658", "T8": "585", "T9": "561", "T10": "585", "T11": "585", "T12": "658", "Tong": "4.878"}, "DTT (tr)": {"T5": "113", "T6": "128", "T7": "128", "T8": "113", "T9": "109", "T10": "113", "T11": "113", "T12": "128", "Tong": "946"}, "EBITDA (tr)": {"T5": "4", "T6": "4", "T7": "4", "T8": "4", "T9": "4", "T10": "4", "T11": "4", "T12": "4", "Tong": "31"}}, "362 NGT BN": {"nhom": "Không đủ data", "LK": {"T5": "114.235", "T6": "128.514", "T7": "128.514", "T8": "114.235", "T9": "109.475", "T10": "114.235", "T11": "114.235", "T12": "128.514", "Tong": "951.956"}, "DTT (tr)": {"T5": "460", "T6": "518", "T7": "518", "T8": "460", "T9": "441", "T10": "460", "T11": "460", "T12": "518", "Tong": "3.837"}, "DTT (tỷ)": {"T5": "26.74", "T6": "30.08", "T7": "30.08", "T8": "26.74", "T9": "25.62", "T10": "26.74", "T11": "26.74", "T12": "30.08", "Tong": "222.80"}, "EBITDA (tr)": {"T5": "94", "T6": "106", "T7": "106", "T8": "94", "T9": "90", "T10": "94", "T11": "94", "T12": "106", "Tong": "786"}, "EBITDA (tỷ)": {"T5": "3.77", "T6": "4.25", "T7": "4.25", "T8": "3.77", "T9": "3.62", "T10": "3.77", "T11": "3.77", "T12": "4.25", "Tong": "31.45"}}};
+
+// === Matrix bubble chart (Section 1) ===
+(function() {
+  const ctx = document.getElementById('chartMatrix').getContext('2d');
+  const datasets = [];
+  for (const [g, arr] of Object.entries(BUBBLE)) {
+    if (!arr.length) continue;
+    datasets.push({
+      label: g + ' (' + arr.length + ')',
+      data: arr,
+      backgroundColor: GROUP_COLOR[g] + 'CC',
+      borderColor: GROUP_COLOR[g],
+      borderWidth: 1
+    });
+  }
+  // Threshold lines plugin
+  const plugin = {
+    id: 'thr',
+    afterDraw(chart) {
+      const { ctx, chartArea, scales: { x, y } } = chart;
+      const xPos = x.getPixelForValue(1.09);
+      const yPos = y.getPixelForValue(0);
+      ctx.save();
+      ctx.strokeStyle = 'rgba(0,0,0,0.35)';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([6, 4]);
+      ctx.beginPath(); ctx.moveTo(xPos, chartArea.top); ctx.lineTo(xPos, chartArea.bottom); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(chartArea.left, yPos); ctx.lineTo(chartArea.right, yPos); ctx.stroke();
+      ctx.font = 'bold 12px Arial';
+      ctx.globalAlpha = 0.45;
+      ctx.fillStyle = GROUP_COLOR['Phát triển']; ctx.textAlign = 'right'; ctx.fillText('PHÁT TRIỂN', chartArea.right - 8, chartArea.top + 18);
+      ctx.fillStyle = GROUP_COLOR['Định hình']; ctx.textAlign = 'left'; ctx.fillText('ĐỊNH HÌNH', chartArea.left + 8, chartArea.top + 18);
+      ctx.fillStyle = GROUP_COLOR['Bền vững']; ctx.textAlign = 'right'; ctx.fillText('BỀN VỮNG', chartArea.right - 8, chartArea.bottom - 8);
+      ctx.fillStyle = GROUP_COLOR['Nền móng']; ctx.textAlign = 'left'; ctx.fillText('NỀN MÓNG', chartArea.left + 8, chartArea.bottom - 8);
+      ctx.restore();
+    }
+  };
+  new Chart(ctx, {
+    type: 'bubble',
+    data: { datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      aspectRatio: 1.8,
+      scales: {
+        x: { title: { display: true, text: 'CMGR (% tăng trưởng khách/tháng)' }, grid: { color: '#eee' } },
+        y: { title: { display: true, text: 'EBITDA margin (%)' }, grid: { color: '#eee' } }
+      },
+      plugins: {
+        legend: { position: 'top' },
+        tooltip: {
+          callbacks: {
+            label(ctx) {
+              const d = ctx.raw;
+              return [d.name + ' (' + (d.gdkv || '?') + ')', 'CMGR: ' + d.x.toFixed(2) + '%', 'EBITDA: ' + d.y.toFixed(1) + '%', 'DTT Q1: ' + d.dtt.toFixed(1) + 'M'];
+            }
+          }
+        }
+      }
+    },
+    plugins: [plugin]
+  });
+})();
+
+// === Hit rate scatter (Section 3) ===
+(function() {
+  const ctx = document.getElementById('chartHitRate').getContext('2d');
+  const groups = {};
+  HITRATE.forEach(d => { if (!groups[d.nhom]) groups[d.nhom] = []; groups[d.nhom].push(d); });
+  const datasets = [];
+  for (const [g, arr] of Object.entries(groups)) {
+    datasets.push({
+      label: g + ' (' + arr.length + ')',
+      data: arr.map(d => ({x: d.x, y: d.y, name: d.name})),
+      backgroundColor: (GROUP_COLOR[g] || '#888') + 'AA',
+      borderColor: GROUP_COLOR[g] || '#888',
+      pointRadius: 5
+    });
+  }
+  new Chart(ctx, {
+    type: 'scatter',
+    data: { datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      aspectRatio: 2,
+      scales: {
+        x: { title: { display: true, text: 'Target Growth LK vs 2025 (%)' } },
+        y: { title: { display: true, text: 'Hit rate LK T1-T4.2026 (%)' } }
+      },
+      plugins: {
+        legend: { position: 'top' },
+        tooltip: {
+          callbacks: {
+            label(ctx) {
+              const d = ctx.raw;
+              return [d.name, 'Growth: ' + d.x.toFixed(1) + '%', 'Hit rate: ' + d.y.toFixed(1) + '%'];
+            }
+          }
+        }
+      }
+    }
+  });
+})();
+
+// === Salon detail dropdown (Section 5d) ===
+function fmt(s) {
+  if (s === null || s === undefined || s === '') return '-';
+  return s;
+}
+function showSalon(name) {
+  const div = document.getElementById('salonDetail');
+  if (!name) {
+    div.innerHTML = '<p style="color:var(--muted); padding:12px;">Chọn một salon để xem chi tiết target 8 tháng T5-T12.</p>';
+    return;
+  }
+  const d = MONTHLY[name];
+  if (!d) { div.innerHTML = '<p>Không có data.</p>'; return; }
+  const group = d.nhom || '';
+  const color = GROUP_COLOR[group] || '#888';
+  const months = ['T5','T6','T7','T8','T9','T10','T11','T12'];
+  const metrics = [
+    ['LK', 'Lượt khách', 'LK'],
+    ['DTT (tr)', 'DTT (triệu VNĐ)', 'DTT (tỷ)'],
+    ['EBITDA (tr)', 'EBITDA (triệu VNĐ)', 'EBITDA (tỷ)']
+  ];
+  let html = '<h4 style="margin-bottom:8px;"><strong>' + name + '</strong> <span class="badge" style="background:' + color + '">' + group + '</span></h4>';
+  html += '<table><thead><tr><th>Chỉ số</th>';
+  months.forEach(m => html += '<th class="num">' + m + '</th>');
+  html += '<th class="num">Tổng T5-T12</th></tr></thead><tbody>';
+  metrics.forEach(([k, label, altK]) => {
+    const row = d[k] || d[altK];
+    if (!row) return;
+    html += '<tr><td><strong>' + label + '</strong></td>';
+    months.forEach(m => html += '<td class="num">' + fmt(row[m]) + '</td>');
+    html += '<td class="num"><strong>' + fmt(row['Tong']) + '</strong></td></tr>';
+  });
+  html += '</tbody></table>';
+  div.innerHTML = html;
+}
+
+// Smooth scroll
+document.querySelectorAll('nav a').forEach(a => {
+  a.addEventListener('click', function(e) {
+    e.preventDefault();
+    const el = document.querySelector(this.getAttribute('href'));
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+</script>
+</body>
+</html>

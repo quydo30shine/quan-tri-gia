@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<script>
+if (sessionStorage.getItem("tm_unlocked") !== "1") { window.location.href = "index.html"; }
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chính sách Dịch vụ &amp; Giá dịch vụ 30Shine — V1 T4/2026</title>
+<style>
+:root { --navy: #1F4E78; --navy-light: #2E75B6; --red: #C00000; --green: #548235; --orange: #ED7D31; --gray: #666; --bg: #f7f9fc; --card: #ffffff; --border: #e1e8ed; --warn: #fff3cd; --key: #c6e0b4; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Calibri, sans-serif; background: var(--bg); color: #2c3e50; line-height: 1.6; }
+.hero { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%); color: white; padding: 50px 40px; text-align: center; }
+.hero h1 { font-size: 32px; margin-bottom: 12px; }
+.hero p { font-size: 17px; opacity: 0.95; }
+.hero .meta { font-size: 13px; margin-top: 16px; opacity: 0.85; }
+.container { max-width: 1200px; margin: 0 auto; padding: 30px 24px; }
+
+/* Step bar */
+.steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 30px; }
+.step { background: white; border-radius: 12px; padding: 20px; text-align: center; border-top: 4px solid var(--navy); box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: relative; }
+.step .num { width: 36px; height: 36px; background: var(--navy); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin: -32px auto 12px; }
+.step h3 { color: var(--navy); font-size: 15px; margin-bottom: 6px; }
+.step p { font-size: 12px; color: var(--gray); }
+.step a { color: var(--navy-light); text-decoration: none; font-weight: 600; font-size: 12px; display: inline-block; margin-top: 8px; padding: 4px 10px; background: var(--bg); border-radius: 4px; }
+.step a:hover { background: var(--navy); color: white; }
+
+section { background: var(--card); border-radius: 12px; padding: 28px; margin-bottom: 20px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+section h2 { color: var(--navy); font-size: 22px; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 3px solid var(--navy); }
+section .lead { color: var(--gray); margin-bottom: 16px; font-size: 14px; }
+h3 { color: var(--navy); font-size: 17px; margin-top: 18px; margin-bottom: 10px; }
+
+table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 14px; }
+th { background: var(--navy); color: white; padding: 10px 12px; text-align: left; font-size: 13px; }
+td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+tr:hover td { background: var(--bg); }
+a { color: var(--navy-light); text-decoration: none; font-weight: 600; }
+a:hover { text-decoration: underline; }
+
+.role-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 12px; }
+.role-card { background: var(--bg); padding: 16px; border-radius: 8px; border-left: 4px solid var(--navy-light); }
+.role-card strong { color: var(--navy); display: block; margin-bottom: 4px; font-size: 14px; }
+.role-card p { font-size: 12px; color: var(--gray); }
+
+.cta { background: linear-gradient(135deg, var(--orange), #d96d28); color: white; padding: 24px; border-radius: 10px; text-align: center; margin: 16px 0; }
+.cta h3 { color: white !important; font-size: 18px; margin-bottom: 8px; }
+.cta a { display: inline-block; margin-top: 12px; padding: 12px 28px; background: white; color: var(--orange); border-radius: 8px; font-weight: bold; font-size: 15px; }
+.cta a:hover { background: rgba(255,255,255,0.9); text-decoration: none; }
+
+.alert { background: var(--warn); border-left: 4px solid var(--red); padding: 14px 18px; border-radius: 6px; margin: 8px 0; }
+.alert strong { color: var(--red); }
+.numbers { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 12px; margin: 16px 0; }
+.num-card { background: var(--bg); padding: 14px 8px; border-radius: 8px; text-align: center; }
+.num-card .n { font-size: 24px; font-weight: bold; color: var(--navy); display: block; }
+.num-card .lbl { font-size: 11px; color: var(--gray); }
+.num-card.danger .n { color: var(--red); }
+.num-card.success .n { color: var(--green); }
+
+.timeline { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-top: 14px; }
+.tl-item { background: var(--bg); padding: 12px; border-radius: 8px; border-top: 3px solid var(--navy); }
+.tl-item .date { font-weight: bold; color: var(--navy); font-size: 13px; }
+.tl-item .what { font-size: 12px; color: var(--gray); margin-top: 4px; }
+.tl-item.warn { border-top-color: var(--red); }
+.tl-item.warn .date { color: var(--red); }
+.tl-item.golive { border-top-color: var(--green); background: var(--key); }
+.tl-item.golive .date { color: var(--green); }
+
+.contact { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.contact-card { background: var(--bg); padding: 16px; border-radius: 8px; border-left: 3px solid var(--navy-light); }
+.contact-card .name { font-weight: bold; color: var(--navy); }
+.contact-card .role { color: var(--gray); font-size: 12px; margin: 4px 0; }
+.contact-card .email { color: var(--navy-light); font-family: 'SF Mono', monospace; font-size: 13px; }
+
+.footer { text-align: center; padding: 24px; color: var(--gray); font-size: 12px; }
+.icon { font-size: 16px; }
+@media (max-width: 768px) { .steps { grid-template-columns: 1fr 1fr; } table { font-size: 12px; } .hero h1 { font-size: 22px; } }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>Chính sách Dịch vụ &amp; Giá dịch vụ 30Shine</h1>
+  <p>Phiên bản V1 — Tháng 4/2026 | GO-LIVE 05/05/2026</p>
+  <div class="meta">Khối Thương mại 30Shine</div>
+  <div style="margin-top: 14px;"><a href="README_QuyCheck.html" style="display: inline-block; background: rgba(255,255,255,0.22); color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600;">📖 Hướng dẫn review (4 bước) →</a></div>
+</div>
+
+<div class="container">
+
+  <!-- 4-STEP FLOW NAVIGATION -->
+  <div class="steps">
+    <div class="step">
+      <div class="num">1</div>
+      <h3>OVERVIEW CÁC KHỐI</h3>
+      <p>Mỗi khối thấy gì trong V1 — đọc nhanh 5 phút</p>
+      <a href="#overview">Xem ↓</a>
+    </div>
+    <div class="step">
+      <div class="num">2</div>
+      <h3>BỐI CẢNH &amp; ĐIỀU CHỈNH</h3>
+      <p>DMDV / Quy trình / Giá hệ thống</p>
+      <a href="#boi-canh">Xem ↓</a>
+    </div>
+    <div class="step">
+      <div class="num">3</div>
+      <h3>DMDV &amp; GIÁ NQ</h3>
+      <p>Tra cứu giá chi tiết từng salon NQ</p>
+      <a href="#nq-gia">Xem ↓</a>
+    </div>
+    <div class="step">
+      <div class="num">4</div>
+      <h3>QUY TRÌNH ĐI KÈM</h3>
+      <p>SOP/STD/PO ban hành — đối tác hiểu</p>
+      <a href="#quy-trinh">Xem ↓</a>
+    </div>
+  </div>
+
+  <!-- 1. OVERVIEW CÁC KHỐI -->
+  <section id="overview">
+    <h2><span class="icon">📊</span> 1. Overview các khối — Hiểu nhanh</h2>
+    <p class="lead">V1 quy chuẩn 61 DV ON BÁN áp toàn hệ thống — KH ở salon nào cũng có 61 DV như nhau, đuôi giá đồng nhất trong cùng cụm. Quy trình mới: KHÔNG salon tự ON/OFF DV hay update giá; mọi thay đổi do Khối Thương mại điều phối theo chu kỳ chuẩn.</p>
+
+    <div class="role-grid">
+      <div class="role-card"><strong>📋 Quy chuẩn DMDV</strong><p>Master 61 ON BÁN + 5 Tag nội bộ + 4 Key Vùng An (rà chuẩn hoá) — áp toàn 59 CT + 26 NQ + 17 ĐL.</p></div>
+      <div class="role-card"><strong>💰 Khung giá theo cụm</strong><p>Phân 27 cụm theo khu vực + đặc điểm thị trường — đảm bảo cùng khu vực có giá tương đương. <strong>Cùng cụm = đuôi giá giống nhau</strong>, KH so sánh giữa 2 salon trong cùng khu vực không bị chênh.</p></div>
+      <div class="role-card"><strong>🔄 Quy trình mới</strong><p>OFF mọi quy trình ON/OFF DV cũ từ 01/05. Khối TM tổng hợp idea 1 quý/lần → apply điều chỉnh giá tối đa 6 tháng/lần.</p></div>
+      <div class="role-card"><strong>📜 SOP/STD ban hành</strong><p>4 tài liệu: SOP-TM-018 V2, SOP-TM-001 V2, STD-TM-001 V2, Phụ lục PO-TM-001 V2.1.</p></div>
+      <div class="role-card"><strong>🚨 Quản trị rủi ro đuôi giá</strong><p>Cụm có Salon Công ty + NQ chung — đảm bảo đuôi giá đồng nhất, tránh KH so sánh giá giữa các salon trong cùng khu vực.</p></div>
+      <div class="role-card"><strong>🤝 Phối hợp triển khai</strong><p>Vận hành / MKT / Cung ứng / IT / Salon CT / Salon NQ — mỗi mảng có phần riêng trong tài liệu.</p></div>
+    </div>
+
+    <h3>📈 Số liệu chính V1 — <a href="ChiTiet_Master_60DV.html" style="font-size: 14px; color: var(--orange);">📋 Click xem chi tiết Master DMDV</a></h3>
+    <div class="numbers">
+      <div class="num-card"><span class="n">59</span><span class="lbl">DV ON BÁN</span></div>
+      <div class="num-card"><span class="n">5</span><span class="lbl">Tag nội bộ</span></div>
+      <div class="num-card"><span class="n">4</span><span class="lbl">DV theo dõi riêng (xem chi tiết qua tool)</span></div>
+      <div class="num-card"><span class="n">99</span><span class="lbl">Salon (56 CT + 47 NQ)</span></div>
+      <div class="num-card"><span class="n">27</span><span class="lbl">Cụm phân vùng</span></div>
+      <div class="num-card danger"><span class="n">14</span><span class="lbl">Cụm rủi ro CT+NQ</span></div>
+      <div class="num-card danger"><span class="n">103</span><span class="lbl">Giá T3 lệch chuẩn cụm</span></div>
+      <div class="num-card"><span class="n">8</span><span class="lbl">GDKV care NQ</span></div>
+    </div>
+
+    <h3>📅 Lộ trình triển khai</h3>
+    <div class="timeline">
+      <div class="tl-item"><div class="date">28/04 → 03/05</div><div class="what">GDKV xem + thảo luận với đối tác NQ</div></div>
+      <div class="tl-item"><div class="date">04 → 05/05</div><div class="what">Cấp trên xem xét + phê duyệt</div></div>
+      <div class="tl-item golive"><div class="date">🚀 05/05</div><div class="what">GO-LIVE V1 — IT + Vận hành</div></div>
+      <div class="tl-item"><div class="date">06-31/05</div><div class="what">Theo dõi 30 ngày — báo cáo CR/AOV</div></div>
+    </div>
+  </section>
+
+  <section style="background: linear-gradient(135deg, #C00000, #d35400); color: white;">
+    <h2 style="color: white; border-bottom: 3px solid white;">📋 Giá DV Hệ thống — V1 đã chốt</h2>
+    <p style="margin-bottom: 12px;">Có sẵn từ file T3 (24/03): <strong>15 salon CT cần back giá</strong> sau điều chỉnh T3 (97 dòng giá). Phải back trước khi cộng +2.500đ Laborie và align đuôi giá cụm.</p>
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+      <a href="Verify_Gia_Dashboard.html" style="background: white; color: #C00000; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: bold; text-align: center;">🔍 Verify Giá Dashboard<br><span style="font-size: 11px; font-weight: normal;">Soi nhanh 14 cụm rủi ro + 3 cụm CT-NQ chênh</span></a>
+      <a href="GiaHienTai_HeThong.html" style="background: white; color: #C00000; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: bold; text-align: center;">📋 Giá hiện tại HT<br><span style="font-size: 11px; font-weight: normal;">Sort theo cụm CT+NQ+ĐL — baseline V1</span></a>
+      <a href="Preview_Cong_2500_Laborie.html" style="background: white; color: #C00000; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: bold; text-align: center;">💰 +2500đ Laborie<br><span style="font-size: 11px; font-weight: normal;">55 DV được +2500</span></a>
+    </div>
+  </section>
+
+  <!-- 2. BỐI CẢNH & ĐIỀU CHỈNH -->
+  <section id="boi-canh">
+    <h2><span class="icon">🔄</span> 2. Bối cảnh &amp; Điều chỉnh — DMDV / Quy trình / Giá Hệ thống</h2>
+    <p class="lead">Lý do làm V1 + những gì đã quy chuẩn cho hệ thống Công ty.</p>
+    
+    <h3>🎯 5 Nguyên tắc cốt lõi (đọc xong là hiểu)</h3>
+    <ol style="margin-left: 24px; line-height: 2;">
+      <li><strong>CHUNG DANH MỤC</strong> — Master 61 ON BÁN áp toàn hệ thống</li>
+      <li><strong>KHÔNG SALON TỰ ON/OFF DV</strong> — Salon chỉ thực thi, không thêm/sửa/xoá</li>
+      <li><strong>KHÔNG SALON TỰ UPDATE GIÁ</strong> — Khối TM chốt cuối, đối tác chỉ tham khảo</li>
+      <li><strong>CHU KỲ: 1 quý review + 6 tháng apply</strong> giá (Q1+Q3)</li>
+      <li><strong>PHÁT TRIỂN DV theo chiến lược 2026</strong> — mỗi DV mới phải có: phân vai trong nhóm + khung giá theo cụm + cơ sở thị trường rõ ràng</li>
+    </ol>
+
+    <h3>📚 File đọc chi tiết (HTML mở thẳng)</h3>
+    <table>
+      <tr><th width="40%">File</th><th>Nội dung</th></tr>
+      <tr><td>📄 <a href="Master_DMDV_QuanTriGia_V1_T4_2026.html">Master Tổng hợp Đọc liền mạch</a></td><td>15 phần đọc theo flow: Mở đầu → Rule → Bối cảnh DMDV → CT hiểu → NQ hiểu → Nguyên tắc giá → SOP/STD đính kèm</td></tr>
+      <tr><td>🔍 <a href="TraCuu_Gia_HeThong.html">Tra cứu Giá Hệ thống — 102 Salon</a> ⭐</td><td>Đầy đủ 61 DV × 102 salon — gõ tên salon, copy bảng giá gửi đối tác. Giá hiện tại (T3.2026) + Giá đề xuất (5.5)</td></tr>
+      <tr><td>🔍 <a href="TraCuu_Gia_Salon.html">Tra cứu Giá NQ chi tiết</a></td><td>43 NQ + ĐL với GDKV care — bảng dầy đủ từng salon</td></tr>
+    </table>
+
+    <h3 id="file-nguon">📂 File nguồn (Excel — cho anh Quý + reviewer rà soát)</h3>
+    <table>
+      <tr><th width="38%">File Excel</th><th>Mục đích</th></tr>
+      <tr><td>⭐ <a href="excel/BangGia_TieuChuan_Quy_20260428.xlsx">Bảng giá tiêu chuẩn DV Salon (Quý 28/04)</a></td><td><strong>2050 dòng giá</strong> đầy đủ Cắt/Relax/SC/UND/Dưỡng — nguồn giá hiện tại (T3.2026) chính thức</td></tr>
+      <tr><td>📋 <a href="excel/DMDV_Master_HeThong_v1.xlsx">Master DMDV V1</a></td><td>61 DV ON BÁN — Sheet 5 có giá đề xuất (5.5)/2026</td></tr>
+      <tr><td>💼 <a href="excel/_VungCuong_NQ_20260428.xlsx">Feedback NQ Vùng anh Cương</a></td><td>Xác nhận DMDV của 3 salon NQ (177 ĐVB, 411 NVT, 356 ĐXH) — 20 DV phản đối + 42 DV "giữ giá đang chạy"</td></tr>
+      <tr><td>📈 <a href="excel/30Shine_KhungGia_V9_CongTy_20260312.xlsx">V9 Công ty (12/03)</a></td><td>File V9 gốc Công ty — giá hiện tại T3 chi tiết 56 CT</td></tr>
+      <tr><td>📊 <a href="excel/De_xuat_gia_Salon_NQ_thang_3_2026.xlsx">Đề xuất giá NQ T3.2026</a></td><td>Đề xuất giá CĐT NQ tháng 3 — nguồn giá hiện tại NQ + ĐL</td></tr>
+      <tr><td>💰 <a href="excel/BangGia_HeThong_v1.xlsx">Bảng giá Hệ thống V1</a></td><td>102 salon × 3 DV cốt lõi sort theo cụm</td></tr>
+      <tr><td>🏢 <a href="excel/GiaNQ_TheoCum_v1.xlsx">Giá NQ theo cụm</a></td><td>Giá NQ phân cụm — đối chiếu align đuôi giá</td></tr>
+    </table>
+
+    <div class="alert">
+      <strong>🚨 Top cảnh báo:</strong> Một số cụm Salon CT + NQ chung khu vực có chênh đuôi giá. Khối Thương mại review trước trình duyệt để đảm bảo trải nghiệm KH nhất quán.
+    </div>
+  </section>
+
+  <!-- 3. DMDV & GIÁ NQ - LOOKUP TOOL CHO GDKV -->
+  <section id="nq-gia">
+    <h2><span class="icon">🔍</span> 3. DMDV &amp; Giá Salon NQ — Tra cứu chi tiết</h2>
+    <p class="lead">GDKV xem giá theo từng salon NQ phụ trách + copy bảng giá gửi đối tác xác nhận.</p>
+
+    <div class="cta">
+      <h3>🔍 TOOL TRA CỨU GIÁ — 2 LOẠI</h3>
+      <p>Salon Công ty và Nhượng quyền cùng cụm xếp liền kề để check chéo nhanh. Cụm có spread &gt;5K được flag đỏ tự động — phòng tránh KH so sánh giá.</p>
+      <div style="margin-top: 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <a href="TraCuu_Gia_HeThong.html" style="background: white; color: var(--orange); padding: 14px; border-radius: 8px; text-decoration: none; font-weight: bold; text-align: center;">
+          🌐 Tra cứu Hệ thống<br><span style="font-size: 12px; font-weight: normal;">99 salon (CT + NQ + Độc lập) sort theo cụm</span>
+        </a>
+        <a href="TraCuu_Gia_Salon.html" style="background: white; color: var(--orange); padding: 14px; border-radius: 8px; text-decoration: none; font-weight: bold; text-align: center;">
+          📋 Tra cứu chi tiết NQ<br><span style="font-size: 12px; font-weight: normal;">43 salon NQ+ĐL × 1144 dòng giá đề xuất T3</span>
+        </a>
+      </div>
+    </div>
+
+    <h3>Tính năng 2 Tool tra cứu</h3>
+    <table>
+      <tr><th width="30%">Tính năng</th><th>Mô tả</th></tr>
+      <tr><td>🔍 <strong>Search by salon</strong></td><td>Gõ tên salon (vd "359 LQD") → hiện ngay tất cả DV + giá</td></tr>
+      <tr><td>👤 <strong>Filter GDKV</strong></td><td>Chọn 1 trong 8 GDKV → chỉ hiện salon mình care</td></tr>
+      <tr><td>🏷️ <strong>Filter loại salon</strong></td><td>Salon Độc lập / NQ map cụm / Theo GDKV care</td></tr>
+      <tr><td>⚠️ <strong>Filter giá lệch chuẩn cụm</strong></td><td>Hiện chỉ DV có giá T3 ≠ giá chuẩn cụm — flag để align</td></tr>
+      <tr><td>📋 <strong>Copy bảng giá 1 click</strong></td><td>Copy text bảng giá đầy đủ → paste vào tin nhắn/email gửi đối tác NQ</td></tr>
+    </table>
+
+    <h3>📋 File chi tiết (Excel)</h3>
+    <table>
+      <tr><th width="40%">File</th><th>Nội dung</th></tr>
+      <tr><td>💰 <a href="excel/GiaNQ_TheoCum_v1.xlsx">Giá NQ theo Cụm</a></td><td>8 sheet — 43 NQ+ĐL × 61 DV theo cụm + Khung V9 + Key Vùng An + Checklist GDKV</td></tr>
+      <tr><td>📊 <a href="excel/De_xuat_gia_Salon_NQ_thang_3_2026.xlsx">Đề xuất giá NQ T3 (gốc)</a></td><td>File T3 đã đề xuất từ NQ — đầu vào để Khối TM align với chuẩn cụm V9 T4</td></tr>
+    </table>
+
+    <div class="alert">
+      <strong>📍 Quy trình tra cứu &amp; xác nhận giá:</strong> (1) Mở tool, filter theo GDKV care → chỉ hiện các salon phụ trách → (2) Click "Copy bảng giá" → (3) Gửi đối tác NQ qua Zalo/Email → (4) NQ confirm trước 04/05 18:00 → báo về Khối Thương mại.
+    </div>
+  </section>
+
+  <!-- 4. QUY TRÌNH ĐI KÈM -->
+  <section id="quy-trinh">
+    <h2><span class="icon">📜</span> 4. Quy trình đi kèm — Để đối tác hiểu</h2>
+    <p class="lead">SOP/STD/PO ban hành cùng V1 — đối tác đọc là hiểu rule + cách thức làm việc.</p>
+    
+    <table>
+      <tr><th width="35%">Tài liệu</th><th>Nội dung</th><th width="15%">Hiệu lực</th></tr>
+      <tr>
+        <td>📜 <a href="SOP_STD_DinhKem/SOP-TM-018_V2_QuyTrinh_RaMat_DichVu_Moi.html">SOP-TM-018 V2</a></td>
+        <td>Quy trình Cập nhật &amp; Ra mắt DV mới — chỉ Khối TM khởi tạo qua chu kỳ quý</td>
+        <td><strong style="color: var(--red);">01/05</strong></td>
+      </tr>
+      <tr>
+        <td>📜 <a href="SOP_STD_DinhKem/SOP-TM-001_V2_QuyTrinh_DeXuat_DuyetGiaDV.html">SOP-TM-001 V2</a></td>
+        <td>Quy trình Đề xuất &amp; Duyệt Thay đổi Giá DV — chu kỳ Q1+Q3</td>
+        <td>05/05</td>
+      </tr>
+      <tr>
+        <td>📐 <a href="SOP_STD_DinhKem/STD-TM-001_V2_BangGia_DV_60.html">STD-TM-001 V2</a></td>
+        <td>Bảng Giá DV chuẩn — Master 61 DV chi tiết</td>
+        <td>05/05</td>
+      </tr>
+      <tr>
+        <td>📐 <a href="SOP_STD_DinhKem/PhuLuc_PO-TM-001_V2.1_PhanCum_KhungGia.html">Phụ lục PO-TM-001 V2.1</a></td>
+        <td>Phân cụm Salon + Khung giá theo cụm</td>
+        <td>03/05</td>
+      </tr>
+    </table>
+
+    <h3>🚀 Tài liệu Go-Live (chuẩn bị triển khai)</h3>
+    <table>
+      <tr><th width="35%">Tài liệu</th><th>Mục đích</th></tr>
+      <tr><td>🎤 <a href="GoLive_05052026/Slide_Brief_CEO.pptx">Slide brief CEO</a> (.pptx)</td><td>7 slide — trình CEO duyệt 02-03/05</td></tr>
+      <tr><td>🎤 <a href="GoLive_05052026/Slide_Brief_8_GDKV_NQ.pptx">Slide brief 8 GDKV NQ</a> (.pptx)</td><td>10 slide — brief 04/05</td></tr>
+      <tr><td>📧 <a href="GoLive_05052026/Email_Template_OFF_QuyTrinh_Cu.html">Email Template</a></td><td>2 emails sẵn dùng (gửi 28-29/04)</td></tr>
+      <tr><td>🔧 <a href="GoLive_05052026/Checklist_IT_GoLive_05052026.html">Checklist IT Go-Live</a></td><td>4 phân đoạn: trước 01/05 → 30 ngày sau</td></tr>
+      <tr><td>❓ <a href="GoLive_05052026/FAQ_NQ_15Cau.html">FAQ NQ — 15 câu hỏi</a></td><td>GDKV dùng để trả lời NQ care</td></tr>
+    </table>
+  </section>
+
+  <!-- LIÊN HỆ -->
+  <section>
+    <h2><span class="icon">☎️</span> Phối hợp triển khai</h2>
+    <div class="contact">
+      <div class="contact-card">
+        <div class="name">Khối Thương mại</div>
+        <div class="role">Chủ trì xây dựng &amp; ban hành V1</div>
+        <div class="email">Quy chuẩn DMDV + Khung giá + Quy trình</div>
+      </div>
+      <div class="contact-card">
+        <div class="name">Mạng lưới GDKV</div>
+        <div class="role">Care 56 Salon Công ty + 47 Salon Nhượng quyền</div>
+        <div class="email">Brief đối tác + tổng hợp idea quý</div>
+      </div>
+      <div class="contact-card">
+        <div class="name">Các Khối phối hợp</div>
+        <div class="role">Vận hành / MKT / Cung ứng / IT</div>
+        <div class="email">Thực thi theo SOP/STD ban hành</div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<div class="footer">
+  <p><strong>Chính sách Dịch vụ &amp; Giá dịch vụ 30Shine — V1 T4/2026</strong></p>
+  <p>30Shine — Khối Thương mại | Phát hành: 05/05/2026 | Phiên bản tài liệu: V1.0</p>
+</div>
+</body>
+</html>
