@@ -166,18 +166,18 @@ function renderSalon(salon, onlyFlag) {
 function copyTable(salonCode) {
   const salon = DATA.find(s => s.code === salonCode);
   if (!salon) return;
-  let text = `BẢNG GIÁ DỊCH VỤ — SALON ${salon.code} (${salon.loai}) — GDKV: ${salon.gdkv}\n`;
-  text += '='.repeat(80) + '\n';
-  text += 'STT\tSID\tTên DV\tNhóm\tGiá chuẩn cụm (median)\tGhi chú\n';
+  // TSV format, raw numbers -> Excel paste ra dung dong/cot + number
+  let text = `BẢNG GIÁ DỊCH VỤ — SALON ${salon.code} (${salon.loai}) — GDKV: ${salon.gdkv}\r\n`;
+  text += `Giá đề xuất áp dụng từ 05/05/2026\r\n\r\n`;
+  text += 'STT\tSID\tTên DV\tNhóm\tGiá đề xuất (5.5)\tGhi chú\r\n';
   salon.services.forEach((s, i) => {
     if (s.gia_chuan > 0) {
-      text += `${i+1}\t${s.sid}\t${s.ten || ''}\t${s.nhom_chi || ''}\t${fmt(s.gia_chuan)}\t${s.flag ? 'Đã align' : 'OK'}\n`;
+      text += `${i+1}\t${s.sid}\t${s.ten || ''}\t${s.nhom_chi || ''}\t${s.gia_chuan}\t${s.flag ? 'Đã align' : 'OK'}\r\n`;
     }
   });
-  text += '\n*Giá chuẩn áp dụng từ 05/05/2026 — Khối Thương mại 30Shine*';
   navigator.clipboard.writeText(text).then(() => {
     const btn = event.target;
-    btn.textContent = '✓ Đã copy!';
+    btn.textContent = '✓ Đã copy (paste vào Excel)';
     btn.classList.add('copied');
     setTimeout(() => { btn.textContent = '📋 Copy bảng giá gửi đối tác'; btn.classList.remove('copied'); }, 2000);
   });

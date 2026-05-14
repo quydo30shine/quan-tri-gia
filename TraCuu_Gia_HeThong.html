@@ -187,20 +187,22 @@ function renderSalon(s, onlyFlagged) {
 function copySalon(code, btn) {
   const s = DATA.find(x => x.code === code);
   if (!s) return;
+  // TSV (tab-separated) -> paste vao Excel ra dung dong/cot
   const lines = [`Bảng giá DV — ${s.ten} (${s.code})`,
-                 `Loại: ${s.loai}${s.cum ? ' | Cụm ' + s.cum : ''}`,
+                 `Loại: ${s.loai}${s.cum ? '\tCụm ' + s.cum : ''}`,
                  `Giá hiện tại (T3.2026) → Giá đề xuất áp dụng (5.5.2026)`,
                  ``,
-                 `STT | SID | Tên DV | Giá T3 | Giá 5/5 | Δ`];
+                 `STT\tSID\tTên DV\tGiá T3\tGiá 5/5\tΔ`];
   let stt = 0;
   s.services.forEach(sv => {
     stt++;
-    const d = (sv.gia_55||0) - (sv.gia_t3||0);
-    const sign = d > 0 ? '+' : '';
-    lines.push(`${stt} | ${sv.sid} | ${sv.ten} | ${(sv.gia_t3||0).toLocaleString('vi-VN')} | ${(sv.gia_55||0).toLocaleString('vi-VN')} | ${sign}${(d/1000).toFixed(1)}K`);
+    const t3 = sv.gia_t3 || 0;
+    const g55 = sv.gia_55 || 0;
+    const d = g55 - t3;
+    lines.push(`${stt}\t${sv.sid}\t${sv.ten}\t${t3}\t${g55}\t${d}`);
   });
-  navigator.clipboard.writeText(lines.join('\n')).then(() => {
-    btn.textContent = '✓ Đã copy';
+  navigator.clipboard.writeText(lines.join('\r\n')).then(() => {
+    btn.textContent = '✓ Đã copy (paste vào Excel)';
     btn.classList.add('copied');
     setTimeout(() => { btn.textContent = '📋 Copy bảng giá'; btn.classList.remove('copied'); }, 1800);
   });
