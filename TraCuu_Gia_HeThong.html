@@ -89,6 +89,10 @@ tr.flag-row td { background: var(--warn); }
     <select id="filter-cum"><option value="">— Tất cả cụm —</option></select>
   </div>
   <div class="control">
+    <label>👤 GDKV care</label>
+    <select id="filter-gdkv"><option value="">— Tất cả GDKV —</option></select>
+  </div>
+  <div class="control">
     <label>⚠️ Hiện chỉ DV cần check</label>
     <select id="filter-flag">
       <option value="">Tất cả DV</option>
@@ -112,6 +116,19 @@ const cumSel = document.getElementById('filter-cum');
   const opt = document.createElement('option');
   opt.value = c; opt.textContent = `Cụm ${c}`;
   cumSel.appendChild(opt);
+});
+
+// Build GDKV options (skip "—" placeholder for CT)
+const gdkvCount = {};
+DATA.forEach(s => {
+  const g = s.gdkv || '';
+  if (g && g !== '—') gdkvCount[g] = (gdkvCount[g] || 0) + 1;
+});
+const gdkvSel = document.getElementById('filter-gdkv');
+Object.entries(gdkvCount).sort((a, b) => b[1] - a[1]).forEach(([g, n]) => {
+  const opt = document.createElement('option');
+  opt.value = g; opt.textContent = `${g} (${n})`;
+  gdkvSel.appendChild(opt);
 });
 
 function fmt(n) {
@@ -225,12 +242,14 @@ function render() {
   const q = document.getElementById('search').value.toLowerCase().trim();
   const fLoai = document.getElementById('filter-loai').value;
   const fCum = document.getElementById('filter-cum').value;
+  const fGdkv = document.getElementById('filter-gdkv').value;
   const fFlag = document.getElementById('filter-flag').value === '1';
 
   let filtered = DATA;
   if (q) filtered = filtered.filter(s => (s.code + ' ' + s.ten + ' ' + s.tinh).toLowerCase().includes(q));
   if (fLoai) filtered = filtered.filter(s => s.type === fLoai);
   if (fCum) filtered = filtered.filter(s => String(s.cum) === fCum);
+  if (fGdkv) filtered = filtered.filter(s => s.gdkv === fGdkv);
 
   // If onlyFlagged: keep only salons with at least one flagged service
   if (fFlag) filtered = filtered.filter(s => s.services.some(sv => Math.abs((sv.gia_55||0) - (sv.gia_t3||0)) >= 5000));
@@ -243,6 +262,7 @@ function render() {
 document.getElementById('search').addEventListener('input', render);
 document.getElementById('filter-loai').addEventListener('change', render);
 document.getElementById('filter-cum').addEventListener('change', render);
+document.getElementById('filter-gdkv').addEventListener('change', render);
 document.getElementById('filter-flag').addEventListener('change', render);
 
 render();
