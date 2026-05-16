@@ -117,6 +117,13 @@ const cumSel = document.getElementById('filter-cum');
   opt.value = c; opt.textContent = `Cụm ${c}`;
   cumSel.appendChild(opt);
 });
+// Option for salons without cum (Salon độc lập)
+const noCumCount = DATA.filter(s => !s.cum).length;
+if (noCumCount > 0) {
+  const opt = document.createElement('option');
+  opt.value = '__nocum'; opt.textContent = `Salon không cụm (${noCumCount})`;
+  cumSel.appendChild(opt);
+}
 
 // Build GDKV options (skip "—" placeholder for CT)
 const gdkvCount = {};
@@ -248,7 +255,8 @@ function render() {
   let filtered = DATA;
   if (q) filtered = filtered.filter(s => (s.code + ' ' + s.ten + ' ' + s.tinh).toLowerCase().includes(q));
   if (fLoai) filtered = filtered.filter(s => s.type === fLoai);
-  if (fCum) filtered = filtered.filter(s => String(s.cum) === fCum);
+  if (fCum === '__nocum') filtered = filtered.filter(s => !s.cum);
+  else if (fCum) filtered = filtered.filter(s => String(s.cum) === fCum);
   if (fGdkv) filtered = filtered.filter(s => s.gdkv === fGdkv);
 
   // If onlyFlagged: keep only salons with at least one flagged service
